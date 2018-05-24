@@ -1,0 +1,7 @@
+﻿@model JustBlog.Models.WidgetViewModel
+
+<div id="sidebars">
+    @Html.Partial("_CategoriesPartial", Model.Categories)
+    @Html.Partial("_TagsPartial", Model.Tags)
+    @Html.Partial("_LatestPostsPartial", Model.LatestPosts)
+</div>

@@ -1,0 +1,52 @@
+﻿@using JustBlog.Core.Objects
+@model Post
+<div class="container">
+
+    <div class="row">
+
+        <!--Heading-->
+        <div class="post-title">
+            <h2>@Html.PostLink(Model)</h2>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <!--Category-->
+        <div class="post-category">
+            <span>Category: </span>@Html.CategoryLink(Model.Category)
+        </div>
+
+        <!--Tags-->
+        <div class="post-tags">
+            <span>Tags:</span>@Helpers.Tags(Html, Model.Tags)
+        </div>
+
+        <!--Posted date-->
+        <p class="ml-auto">
+            @Model.PostedOn.ToShortDateString()@*ToConfigLocalTime()*@
+        </p>
+
+    </div>
+
+
+    <div class="row">
+        <!--Short Description-->
+        <div class="post-body">
+            @Html.Raw(Model.ShortDescription)
+        </div>
+
+        <div class="post-foot">
+            @Html.ActionLink("continue...", "post", "blog",
+                                 new
+                                 {
+                                     year = Model.PostedOn.Year,
+                                     month = Model.PostedOn.Month,
+                                     title = Model.UrlSlug
+                                 },
+                                 new { title = "continue..." }
+                             )
+        </div>
+    </div>
+</div>
+

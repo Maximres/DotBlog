@@ -1,0 +1,11 @@
+﻿
+.tags-div {
+    display:inline-block;
+}
+
+.btn-xs, .btn-group-sm > .btn {
+    padding: 0.25rem 0.4rem;
+    font-size: 0.85rem;
+    line-height: 1;
+    border-radius: 0.2rem;
+}

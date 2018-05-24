@@ -1,0 +1,25 @@
+﻿@model JustBlog.Models.ListViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="content">
+
+    <h1>@ViewBag.Title</h1>
+
+    @if (Model.Posts.Count() > 0)
+    {
+        foreach (var post in Model.Posts)
+        {
+            @Html.Partial("_PostTemplate", post)
+        }
+    }
+    else
+    {
+        <p>Упс! Записей не найдено!</p>
+    }
+
+    @Html.Partial("_Pager", Model)
+
+</div>

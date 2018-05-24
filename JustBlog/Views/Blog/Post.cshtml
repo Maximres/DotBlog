@@ -1,0 +1,36 @@
+﻿@model JustBlog.Core.Objects.Post
+
+@{
+    ViewBag.Title = "Post";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="jumbotron col">
+            <h1 class="display-4">@Html.PostLink(Model)</h1>
+
+            <div>
+                <span>Category:</span> @Html.CategoryLink(Model.Category)
+            </div>
+
+            <div>
+                <span>Tags:</span> @Helpers.Tags(Html, Model.Tags)
+            </div>
+
+            <div class="ml-auto">
+                @Model.PostedOn.ToConfigLocalTime()
+            </div>
+
+            <hr class="my-2">
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-10 offset-1">
+            @Html.Raw(Model.Description)
+        </div>
+    </div>
+</div>
+

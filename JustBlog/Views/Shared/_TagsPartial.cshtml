@@ -1,0 +1,17 @@
+﻿@model IEnumerable<JustBlog.Core.Objects.Tag>
+
+<div class="tags sidebar">
+    <h3>Теги</h3>
+
+    @if (Model.Count() > 0)
+    {
+        foreach (var tag in Model)
+        {
+            @Html.TagLink(tag, "mr-2 mb-2")
+        }
+    }
+    else
+    {
+        <p>No tags found!</p>
+    }
+</div>

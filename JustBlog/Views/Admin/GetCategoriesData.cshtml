@@ -1,0 +1,73 @@
+﻿@model IEnumerable<JustBlog.Core.Objects.Category>
+
+@{
+        ViewBag.Title = "Category";
+        AjaxOptions ajaxOptions = new AjaxOptions
+        {
+            //Confirm = "return confirmDelete()",
+            UpdateTargetId = "tableBody",
+            OnBegin = "openDialog",
+            InsertionMode = InsertionMode.InsertAfter,
+            Url = Url.Action("DeleteCategory", "Admin"),
+            HttpMethod = "Post",
+
+    };
+}
+<script>
+
+    function openDialog() {
+        var conf = confirm("Вы уверены, что хотитие удалить объект?");
+        if (conf == true) {
+            return true;
+        }
+        return false;
+    };
+
+</script>
+
+<table class="table table-striped table-condensed table-bordered">
+    <tr>
+        <th class="text-right"></th>
+        <th>Заголовок</th>
+        <th class="text-right">Описание</th>
+        <th class="text-center">Действие</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td class="text-right">@item.Id</td>
+            <td>@Html.ActionLink(item.Name, "Edit", new { item.Id })</td>
+            <td class="text-right">@item.Description</td>
+
+            <td class="text-center">
+                <div style="display:inline-block">
+                    @using (Ajax.BeginForm(ajaxOptions))
+                    {
+                        @Html.Hidden("id", item.Id)
+                        <input type="submit"
+                               class="btn btn-default btn-xs"
+                               value="Delete" />
+                    }
+                    @*@Ajax.ActionLink("Delete", "Index", "Admin", new { area = "Admin", id = item.Id }, ajaxOptions)*@
+
+                </div>
+                <div style="display:inline-block">
+                    @using (Html.BeginForm("DeleteCategory", "Admin"))
+                    {
+                        @Html.Hidden("id", item.Id)
+                        <input type="submit"
+                               class="btn btn-default btn-xs"
+                               value="Edit" />
+                    }
+                </div>
+            </td>
+        </tr>
+    }
+</table>
+
+<div class="panel panel-default">
+    <div class="panel-footer">
+        @Html.ActionLink("Add a new post", "Create", null,
+                             new { @class = "btn btn-primary" })
+    </div>
+</div>

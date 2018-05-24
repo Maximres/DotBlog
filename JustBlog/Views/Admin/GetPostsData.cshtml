@@ -1,0 +1,150 @@
+﻿@model IEnumerable<JustBlog.Core.Objects.Post>
+
+@{
+    ViewBag.Title = "Posts";
+    int current = 0;
+
+    HtmlString SeparateTags(int curr, int count)
+    {
+        if (curr < count)
+        {
+            return MvcHtmlString.Create(",");
+        }
+        current = 0;
+        return MvcHtmlString.Create("");
+    }
+}
+
+
+<table class="table table-striped table-condensed table-bordered">
+    <tr>
+        <th class="text-right"></th>
+        <th>Заголовок</th>
+        <th class="text-right">Категория</th>
+        <th class="text-left">Теги</th>
+        <th class="text-center">Действие</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td class="text-right">@item.Id</td>
+            @*<td>@Html.ActionLink(item.Title, "EditPost", "Admin", new { id = item.Id })</td>*@
+            @*<td>@Html.RouteLink(item.Title, "Admin", new { action = "EditPost", id = item.Id }, null)</td>*@
+            <td>
+                @Ajax.ActionLink(item.Title, "Admin", new AjaxOptions
+                {
+                    Url = Url.RouteUrl(new { action = "EditPost", id = item.Id }),
+                    HttpMethod = "GET",
+                    OnBegin = "IsLoading",
+                    OnSuccess = "SetContent",
+                    OnFailure = "AlertUser"
+                })
+        </td>
+        <td class="text-right">@item.Category.Name</td>
+        <td class="text-left">
+            @foreach (var tag in item.Tags)
+            {
+                <span>@tag.Name@SeparateTags(++current, item.Tags.Count())</span>
+
+            }
+    </td>
+    <td class="text-center">
+        @using (Html.BeginForm("Delete", "Admin"))
+        {
+            @Html.Hidden("Id", item.Id)
+            <input type="submit"
+                   class="btn btn-default btn-xs"
+                   value="Delete" />
+        }
+    </td>
+</tr>
+}
+</table>
+
+<div class="panel panel-default">
+    <div class="card-footer">
+        @Html.ActionLink("Add a new post", "CreatePost", "Admin",
+                           new { @class = "btn btn-default" })
+    </div>
+</div>
+
+ @*Указать путь к файлу со скриптами
+@Scripts.Render();*@
+<script>
+    var clickedCounter;
+        $(function () {
+        //TODO: отменяет повторный вызов AJAX если != 1
+            clickedCounter = 0;
+    });
+
+    function IsLoading() {
+        clickedCounter += 1;
+        if (clickedCounter === 1) {
+            return true;
+        }
+        return false;
+    }
+
+
+    function SetContent(data) {
+        //обнуляем счетчик кликов
+        clickedCounter = 0;
+
+        //очищаем и заполняем modal-content html датой
+        var modal = $("#target").empty().html(data);
+        $("#editModal").modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+
+        tinyMCE.init({
+            menubar: false,
+            statusbar: true,
+            theme: "modern",
+            style_formats: [
+                {
+                    title: 'Headers', items: [
+                        { title: 'Header 1', format: 'h1' },
+                        { title: 'Header 2', format: 'h2' },
+                        { title: 'Header 3', format: 'h3' },
+                        { title: 'Header 4', format: 'h4' },
+                        { title: 'Header 5', format: 'h5' },
+                        { title: 'Header 6', format: 'h6' }
+                    ]
+                },
+                {
+                    title: 'Inline', items: [
+                        { title: 'Bold', icon: 'bold', format: 'bold' },
+                        { title: 'Italic', icon: 'italic', format: 'italic' },
+                        { title: 'Underline', icon: 'underline', format: 'underline' },
+                        { title: 'Strikethrough', icon: 'strikethrough', format: 'strikethrough' },
+                        { title: 'Superscript', icon: 'superscript', format: 'superscript' },
+                        { title: 'Subscript', icon: 'subscript', format: 'subscript' }
+                    ]
+                },
+                {
+                    title: 'Alignment', items: [
+                        { title: 'Left', icon: 'alignleft', format: 'alignleft' },
+                        { title: 'Center', icon: 'aligncenter', format: 'aligncenter' },
+                        { title: 'Right', icon: 'alignright', format: 'alignright' },
+                        { title: 'Justify', icon: 'alignjustify', format: 'alignjustify' }
+                    ]
+                }
+            ],
+            indentation : null,
+            selector: "textarea",
+            height: "400",
+            branding: false,
+
+        });
+
+    }
+
+    function AlertUser(err) {
+        alert(err.Message);
+        clickedCounter = 0;
+    }
+</script>
+
+
+

@@ -1,0 +1,38 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    @*<link href="~/Content/bootstrap.css" rel="stylesheet" />
+        <link href="~/Content/ErrorStyles.css" rel="stylesheet" />*@
+    <meta name="robots" content="noindex, nofollow">
+    @Scripts.Render("~/bundles/jq")
+    @Styles.Render("~/Content/css")
+
+    <title></title>
+
+</head>
+<body>
+    <div>
+        @if (TempData["message"] != null)
+        {
+            <div class="alert alert-success">@TempData["message"]</div>
+        }
+    </div>
+    <div class="container-fluid">
+        @RenderBody()
+    </div>
+
+    
+    @Scripts.Render("~/bundles/clientfeaturesscripts")
+    @Scripts.Render("~/bundles/bootstrapJS")
+    @RenderSection("Scripts", false)
+</body>
+</html>
+
+
+

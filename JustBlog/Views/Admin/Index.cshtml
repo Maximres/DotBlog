@@ -1,0 +1,104 @@
+﻿
+@{
+    ViewBag.Title = "Admin";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    AjaxOptions ajaxOptions = new AjaxOptions
+    {
+        UpdateTargetId = "tableBody",
+        Url = Url.Action("GetCategoriesData", "Admin"),
+        InsertionMode = InsertionMode.Replace,
+        OnSuccess = "ajaxSuccess"
+    };
+}
+
+<script type="text/javascript">
+    function processData(data) {
+        var target = $("#tableBody");
+        target.empty();
+        for (var i = 0; i < data.length; i++) {
+            var person = data[i];
+            target.append("<tr><td>" + person.FirstName + "</td><td>"
+                + person.LastName + "</td><td>" + person.Role + "</td></tr>");
+        }
+    }
+
+    function ajaxSuccess(text) {
+        var targer = $("#tittle");
+        targer.empty().append("Категории");
+    }
+</script>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 id="tittle">Панель администратора</h3>
+    </div>
+
+    <div class="btn-group " role="group">
+        @* TODO: ajax links *@
+        @*@Html.ActionLink("Posts", "GetPostsData", "Admin", new { area = "Admin" }, new { @class = "btn btn-primary ml-auto", role = "button" })
+            @Html.ActionLink("Tags", "GetTagsData", "Admin", new { area = "Admin" }, new { @class = "btn btn-primary ml-auto", role = "button" })
+            @Html.ActionLink("Categories", "GetCategoriesData", "Admin", new { area = "Admin" }, new { @class = "btn btn-primary ml-auto", role = "button" })*@
+        @Ajax.ActionLink("CategoryAjax", "Index", "Admin", new { area = "Admin" }, ajaxOptions)
+    </div>
+
+    <div class="panel-body" id="tableBody">
+        @Html.Action("GetPostsData", "Admin", new { area = "Admin" })
+    </div>
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editModal" id="btnModal">
+        Launch demo modal
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content" id="target">
+                
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div>
+    @using (Html.BeginForm())
+    {
+        <div>
+            @Html.TextArea("Hello")
+        </div>
+    }
+</div>
+
+<input name='tags3' placeholder='Write some tags' pattern='^[A-Za-z_ ]{1,15}$'>
+
+@section Scripts {
+    <script src="~/Scripts/tinymce/tinymce.min.js"></script>
+    <script src="~/Scripts/tinymce/jquery.tinymce.min.js"></script>
+
+    <script> 
+        var input3 = document.querySelector('input[name=tags3]'),
+            tagify3 = new Tagify(input3, {
+                delimiters: ", ",
+                suggestionsMinChars: 2,
+                maxTags: 7,
+                blacklist: ["fuck", "shit", "pussy"],
+                enforceWhitelist: true,
+                whitelist: ["temple", "stun", "detective", "sign", "passion", "routine", "deck", "discriminate", "relaxation", "fraud", "attractive", "soft", "forecast", "point", "thank", "stage", "eliminate", "effective", "flood", "passive", "skilled", "separation", "contact", "compromise", "reality", "district", "nationalist", "leg", "porter", "conviction", "worker", "vegetable", "commerce", "conception", "particle", "honor", "stick", "tail", "pumpkin", "core", "mouse", "egg", "population", "unique", "behavior", "onion", "disaster", "cute", "pipe", "sock", "dialect", "horse", "swear", "owner", "cope", "global", "improvement", "artist", "shed", "constant", "bond", "brink", "shower", "spot", "inject", "bowel", "homosexual", "trust", "exclude", "tough", "sickness", "prevalence", "sister", "resolution", "cattle", "cultural", "innocent", "burial", "bundle", "thaw", "respectable", "thirsty", "exposure", "team", "creed", "facade", "calendar", "filter", "utter", "dominate", "predator", "discover", "theorist", "hospitality", "damage", "woman", "rub", "crop", "unpleasant", "halt", "inch", "birthday", "lack", "throne", "maximum", "pause", "digress", "fossil", "policy", "instrument", "trunk", "frame", "measure", "hall", "support", "convenience", "house", "partnership", "inspector", "looting", "ranch", "asset", "rally", "explicit", "leak", "monarch", "ethics", "applied", "aviation", "dentist", "great", "ethnic", "sodium", "truth", "constellation", "lease", "guide", "break", "conclusion", "button", "recording", "horizon", "council", "paradox", "bride", "weigh", "like", "noble", "transition", "accumulation", "arrow", "stitch", "academy", "glimpse", "case", "researcher", "constitutional", "notion", "bathroom", "revolutionary", "soldier", "vehicle", "betray", "gear", "pan", "quarter", "embarrassment", "golf", "shark", "constitution", "club", "college", "duty", "eaux", "know", "collection", "burst", "fun", "animal", "expectation", "persist", "insure", "tick", "account", "initiative", "tourist", "member", "example", "plant", "river", "ratio", "view", "coast", "latest", "invite", "help", "falsify", "allocation", "degree", "feel", "resort", "means", "excuse", "injury", "pupil", "shaft", "allow", "ton", "tube", "dress", "speaker", "double", "theater", "opposed", "holiday", "screw", "cutting", "picture", "laborer", "conservation", "kneel", "miracle", "brand", "nomination", "characteristic", "referral", "carbon", "valley", "hot", "climb", "wrestle", "motorist", "update", "loot", "mosquito", "delivery", "eagle", "guideline", "hurt", "feedback", "finish", "traffic", "competence", "serve", "archive", "feeling", "hope", "seal", "ear", "oven", "vote", "ballot", "study", "negative", "declaration", "particular", "pattern", "suburb", "intervention", "brake", "frequency", "drink", "affair", "contemporary", "prince", "dry", "mole", "lazy", "undermine", "radio", "legislation", "circumstance", "bear", "left", "pony", "industry", "mastermind", "criticism", "sheep", "failure", "chain", "depressed", "launch", "script", "green", "weave", "please", "surprise", "doctor", "revive", "banquet", "belong", "correction", "door", "image", "integrity", "intermediate", "sense", "formal", "cane", "gloom", "toast", "pension", "exception", "prey", "random", "nose", "predict", "needle", "satisfaction", "establish", "fit", "vigorous", "urgency", "X-ray", "equinox", "variety", "proclaim", "conceive", "bulb", "vegetarian", "available", "stake", "publicity", "strikebreaker", "portrait", "sink", "frog", "ruin", "studio", "match", "electron", "captain", "channel", "navy", "set", "recommend", "appoint", "liberal", "missile", "sample", "result", "poor", "efflux", "glance", "timetable", "advertise", "personality", "aunt", "dog"]
+            })
+
+        tagify3.on('maxTagsExceed', function (e) {
+            console.log(e, e.detail);
+        });
+
+        tagify3.on('blacklisted', function (e) {
+            console.log(e, e.detail);
+        });
+
+        tagify3.on('notWhitelisted', function (e) {
+            console.log(e, e.detail);
+        });
+    </script>
+
+    @* скрипт инициализации tinyMCE *@
+    @*<script src="~/Scripts/Assets/tinymceInit.js"></script>*@
+}

@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta name="keywords" content="@(ViewBag.Keywords ?? ConfigurationManager.AppSettings["MetaKeywords"] ?? "Blog")" />
+    <meta name="description" content="@(ViewBag.Description ?? ConfigurationManager.AppSettings["MetaDescription"])" />
+    <meta name="author" content="@ConfigurationManager.AppSettings["Author"]" />
+    <title>@ViewBag.Title</title>
+
+    
+</head>
+
+<body>
+    <div class="container">
+        <header></header>
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="#">TheBlog</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav nav-pills ml-auto">
+                    <li class="nav-item">@Html.ActionLink("Posts", "Posts", null, new { @class = "nav-link active" })</li>
+                    <li class="nav-item">@Html.ActionLink("Contact", "Contact", null, new { @class = "nav-link" })</li>
+                    <li class="nav-item">@Html.ActionLink("About Me", "AboutMe", null, new { @class = "nav-link" })</li>
+                </ul>
+                @Html.Partial("_SearchPartial")
+                @Html.Partial("_LoginPartial")
+                @Html.ActionLink("Test admin", "Index", "Admin")
+            </div>
+        </nav>
+
+        <!-- Site Content -->
+        <div class="row">
+            <div class="col-lg-9 col-sm-10 col-12">
+                @RenderBody()
+            </div>
+            <div class="col-lg-3 col-sm-2">
+                @Html.Action("Sidebars", "Blog")
+            </div>
+        </div>
+        <!-- Footer -->
+        <footer class="panel panel-default">
+
+            <div class="card-footer">
+                <span class="text-muted">&copy; @DateTime.Now.Year BulgachBlog All Rights Reserved</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Stylesheets and scripts -->
+    @Styles.Render("~/Content/css")
+    @* @Scripts.Render("~/bundles/clientfeaturesscripts")*@
+    @Scripts.Render("~/bundles/jquerylib");
+    @Scripts.Render("~/bundles/bootstrapJS")
+    <script src="@Url.Content("~/Scripts/Assets/SearchConfirm.js")"></script>
+    @RenderSection("Scripts", false)
+
+</body>
+</html>
