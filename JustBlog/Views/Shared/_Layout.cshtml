@@ -8,11 +8,26 @@
     <meta name="description" content="@(ViewBag.Description ?? ConfigurationManager.AppSettings["MetaDescription"])" />
     <meta name="author" content="@ConfigurationManager.AppSettings["Author"]" />
     <title>@ViewBag.Title</title>
-
+   
     
+    @Styles.Render("~/Content/css")
+
 </head>
 
 <body>
+
+    <div id="pageLoader">
+        <div class="loadmeRect">
+            <div class="loadmeRectChild loadmeRect1"></div>
+            <div class="loadmeRectChild loadmeRect2"></div>
+            <div class="loadmeRectChild loadmeRect3"></div>
+            <div class="loadmeRectChild loadmeRect4"></div>
+            <div class="loadmeRectChild loadmeRect5"></div>
+        </div>
+        <div class="loadme-mask"></div>
+    </div>
+
+
     <div class="container">
         <header></header>
 
@@ -53,9 +68,11 @@
     </div>
 
     <!-- Stylesheets and scripts -->
-    @Styles.Render("~/Content/css")
-    @* @Scripts.Render("~/bundles/clientfeaturesscripts")*@
     @Scripts.Render("~/bundles/jquerylib");
+    @Scripts.Render("~/Scripts/Assets/loaderManager.js");
+ 
+
+    @* @Scripts.Render("~/bundles/clientfeaturesscripts")*@
     @Scripts.Render("~/bundles/bootstrapJS")
     <script src="@Url.Content("~/Scripts/Assets/SearchConfirm.js")"></script>
     @RenderSection("Scripts", false)

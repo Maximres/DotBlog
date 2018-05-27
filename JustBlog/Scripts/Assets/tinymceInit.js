@@ -35,6 +35,6 @@
     indentation: null,
     selector: "textarea",
     height: "400",
-    branding: false,
+    branding: false
 
 });

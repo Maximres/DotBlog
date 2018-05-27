@@ -8,8 +8,9 @@
             UpdateTargetId = "tableBody",
             OnBegin = "openDialog",
             InsertionMode = InsertionMode.InsertAfter,
-            Url = Url.Action("DeleteCategory", "Admin"),
+            Url = Url.Action("DeleteCategory", "Category"),
             HttpMethod = "Post",
+            OnSuccess = "toggleLoader"
 
     };
 }
@@ -22,6 +23,10 @@
         }
         return false;
     };
+
+    function toggleLoader() {
+        hideLoader();
+    }
 
 </script>
 
@@ -45,7 +50,7 @@
                     {
                         @Html.Hidden("id", item.Id)
                         <input type="submit"
-                               class="btn btn-default btn-xs"
+                               class="btn btn-outline-secondary btn-xs"
                                value="Delete" />
                     }
                     @*@Ajax.ActionLink("Delete", "Index", "Admin", new { area = "Admin", id = item.Id }, ajaxOptions)*@
@@ -67,7 +72,7 @@
 
 <div class="panel panel-default">
     <div class="panel-footer">
-        @Html.ActionLink("Add a new post", "Create", null,
+        @Html.ActionLink("Add a new category", "CreateCategory", null,
                              new { @class = "btn btn-primary" })
     </div>
 </div>

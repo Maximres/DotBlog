@@ -7,14 +7,10 @@
     Layout = null;
     var mod = Model;
     var cachedSelectList = Cache["CategorySelectList"] as List<SelectListItem>;
-    string selectedId = cachedSelectList.FirstOrDefault(s => s.Selected).Value;
-    HtmlHelper.ClientValidationEnabled = false;
-    HtmlHelper.UnobtrusiveJavaScriptEnabled = false;
+    string selectedId = cachedSelectList.FirstOrDefault(s => s.Selected)?.Value ?? "0";
+    HtmlHelper.ClientValidationEnabled = true;
+    HtmlHelper.UnobtrusiveJavaScriptEnabled = true;
 
-    HtmlString TransformToHtml(string text)
-    {
-        return new HtmlString(text);
-    };
 }
 
 <div class="modal-header">
@@ -24,7 +20,7 @@
     </button>
 </div>
 <div class="modal-body">
-    @using (Html.BeginForm("EditPost", "Admin", FormMethod.Post, new { id = "submittedForm", enctype = "multipart/form-data" }))
+    @using (Html.BeginForm("EditPost", "Post", FormMethod.Post, new { id = "submittedForm", enctype = "multipart/form-data" }))
     {
         @Html.AntiForgeryToken()
 
@@ -116,8 +112,8 @@
             @Html.LabelFor(m => m.Post.Description, new { @class = "control-label col-md-6" })
             <div class="col-12">
                 @Html.TextAreaFor(s =>s.Post.Description,
-                                                
-                                 new { @class = "form-control", rows = 10, overflow_y = "scroll", resize = "none", id = "tinyMCE" })
+
+                                 new { @class = "form-control", rows = 10, overflow_y = "scroll", resize = "none", id = "froala-editor" })
                 @Html.ValidationMessageFor(m => m.Post.Description, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -127,12 +123,83 @@
             <input type="submit" value="Submit" class="btn btn-primary" id="btnSubmit" />
             <button type="button" class="btn btn-secondary closefirstmodal" id="btnClose2">Close</button>
         </div>
+
+
     }
 </div>
 
 @Scripts.Render("~/bundles/jqueryval")
+
 <script>
+    $('textarea#froala-editor').on('froalaEditor.file.uploaded', function (e, editor, response) {
+        console.log(e);
+        console.log(editor);
+        console.log(response);
+    });
+
+    $("textarea#froala-editor").on('froalaEditor.image.inserted', function (e, editor, $img, response) {
+        console.log(e);
+        console.log(editor);
+        console.log($img);
+        console.log(response);
+    });
+
     $(function () {
+
+        if (!$('textarea#froala-editor').data('froala.editor')) {
+            $('textarea#froala-editor').froalaEditor({
+                toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', '|', 'fontSize', '|', 'paragraphFormat', 'align', 'formatOL', 'formatUL', 'outdent', 'indent', 'quote', '-', 'insertLink', 'insertImage', 'insertFile', '|', 'insertHR', 'selectAll', 'clearFormatting', '|', 'undo', 'redo'],
+                imageUploadParam: 'image_param',
+                imageUploadURL: '@Url.Action("TakeImage", "Image")',
+                imageUploadParams: { id: 'my_editor' },
+                imageUploadMethod: 'POST',
+                imageMaxSize: 5 * 1024 * 1024,
+                imageAllowedTypes: ['jpeg', 'jpg', 'png']
+            }).on('froalaEditor.image.beforeUpload', function (e, editor, images) {
+                // Return false if you want to stop the image upload.
+                console.log(images);
+                console.log();
+            })
+                .on('froalaEditor.image.uploaded', function (e, editor, response) {
+                    // Image was uploaded to the server.
+                    console.log(responce);
+                    console.log();
+                })
+                .on('froalaEditor.image.inserted', function (e, editor, $img, response) {
+                    // Image was inserted in the editor.
+                    console.log($img);
+                    console.log();
+                })
+                .on('froalaEditor.image.replaced', function (e, editor, $img, response) {
+                    // Image was replaced in the editor.
+                }).on('froalaEditor.image.error', function (e, editor, error, response) {
+                    // Bad link.
+                    if (error.code == 1) { }
+
+                    // No link in upload response.
+                    else if (error.code == 2) {  }
+
+                    // Error during image upload.
+                    else if (error.code == 3) {
+                        console.log(error);
+                    }
+
+                    // Parsing response failed.
+                    else if (error.code == 4) { }
+
+                    // Image too text-large.
+                    else if (error.code == 5) { }
+
+                    // Invalid image type.
+                    else if (error.code == 6) { }
+
+                    // Image can be uploaded only to same domain in IE 8 and IE 9.
+                    else if (error.code == 7) { }
+
+        // Response contains the original server response to the request if available.
+      });
+        }
+
 
         //установка текущей даты свойству "дата изменения"
         document.getElementById("datePicker").valueAsDate = new Date()
@@ -158,7 +225,7 @@
                 .removeData("validator") /* added by the raw jquery.validate plugin */
                 .removeData("unobtrusiveValidation");
             var _formValue = $(this)[0];
-            
+
            $.validator.unobtrusive.parse(_form);
 
             var isValid = _form.valid();
@@ -175,7 +242,7 @@
                     processData: false,
                     cache: false,
                     contentType: false,
-                    url: '@Url.Action("EditPost", "Admin")',
+                    url: '@Url.Action("EditPost", "Post")',
                     data: _data,
                     success: function (response) {
                         if (response.success == true) {
@@ -187,15 +254,15 @@
                             // DoSomethingElse()
                             alert(response.responseText);
                         }
+
+
                     },
                     error: function (jqXHR) {
                         alert("Что-то пошло не так...");
                     }
                 })
                     .done(function (data, textStatus, jqXHR) {
-                    //test func
-                        //$("#editModal").modal('hide');
-                        //alert(textStatus);
+
                 })
             }
         })
@@ -222,6 +289,13 @@
                 $("#editModal").modal('hide');
                 dataChanged = false;
             }
+            $("#target").empty();
         })
     })
+
+    function InitEditor() {
+        if (!$('#froala-editor').data('froala.editor')) {
+            $('#froala-editor').froalaEditor();
+        }
+    }
 </script>

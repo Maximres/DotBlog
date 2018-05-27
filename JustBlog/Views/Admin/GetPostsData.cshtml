@@ -1,4 +1,9 @@
-﻿@model IEnumerable<JustBlog.Core.Objects.Post>
+﻿@using X.PagedList
+@using X.PagedList.Mvc
+@using JustBlog.Core.Objects
+
+
+@model IEnumerable<Post>
 
 @{
     ViewBag.Title = "Posts";
@@ -13,6 +18,18 @@
         current = 0;
         return MvcHtmlString.Create("");
     }
+
+    AjaxOptions ajaxOptions = new AjaxOptions
+    {
+        //Confirm = "return confirmDelete()",
+        UpdateTargetId = "tableBody",
+        OnBegin = "openDialog",
+        InsertionMode = InsertionMode.InsertAfter,
+        Url = Url.Action("DeletePost", "Post"),
+        HttpMethod = "Post",
+        OnSuccess = "processView"
+
+    };
 }
 
 
@@ -33,48 +50,77 @@
             <td>
                 @Ajax.ActionLink(item.Title, "Admin", new AjaxOptions
                 {
-                    Url = Url.RouteUrl(new { action = "EditPost", id = item.Id }),
+                    Url = Url.RouteUrl(new { controller = "Post", action = "EditPost", id = item.Id }),
                     HttpMethod = "GET",
                     OnBegin = "IsLoading",
                     OnSuccess = "SetContent",
                     OnFailure = "AlertUser"
                 })
-        </td>
-        <td class="text-right">@item.Category.Name</td>
-        <td class="text-left">
-            @foreach (var tag in item.Tags)
-            {
-                <span>@tag.Name@SeparateTags(++current, item.Tags.Count())</span>
+            </td>
+            <td class="text-right">@item.Category.Name</td>
+            <td class="text-left">
+                @foreach (var tag in item.Tags)
+                {
+                    <span>@tag.Name@SeparateTags(++current, item.Tags.Count())</span>
 
-            }
-    </td>
-    <td class="text-center">
-        @using (Html.BeginForm("Delete", "Admin"))
-        {
-            @Html.Hidden("Id", item.Id)
-            <input type="submit"
-                   class="btn btn-default btn-xs"
-                   value="Delete" />
-        }
-    </td>
-</tr>
-}
+                }
+            </td>
+            <td class="text-center">
+                @using (Ajax.BeginForm(ajaxOptions))
+                {
+                    @Html.Hidden("id", item.Id)
+                    <input type="submit"
+                           class="btn btn-outline-secondary btn-xs"
+                           value="Delete" />
+                }
+            </td>
+        </tr>
+    }
 </table>
 
 <div class="panel panel-default">
     <div class="card-footer">
-        @Html.ActionLink("Add a new post", "CreatePost", "Admin",
-                           new { @class = "btn btn-default" })
+        @*@Html.ActionLink("Add a new post", "CreatePost", "Admin",
+        new { @class = "btn btn-default" })*@
+        @Ajax.ActionLink("Добавить пост", "Admin",
+                    null,
+                    new AjaxOptions
+                    {
+                        Url = Url.RouteUrl(new { action = "EditPost", id = 0 }),
+                        HttpMethod = "GET",
+                        OnBegin = "IsLoading",
+                        OnSuccess = "SetContent",
+                        OnFailure = "AlertUser"
+                    },
+                    new { @class = "btn btn-default" }
+                )
+        <div class="pagination text-center">
+        </div>
     </div>
 </div>
 
- @*Указать путь к файлу со скриптами
-@Scripts.Render();*@
+@*Указать путь к файлу со скриптами
+    @Scripts.Render();*@
 <script>
+
+    function openDialog() {
+        var conf = confirm("Вы уверены, что хотитие удалить объект?");
+        if (conf == true) {
+            return true;
+        }
+        return false;
+    };
+
+    function processView() {
+        hideLoader();
+        $("#table-striped").first().remove();
+        //prv.remove();
+    }
+
     var clickedCounter;
-        $(function () {
+    $(function () {
         //TODO: отменяет повторный вызов AJAX если != 1
-            clickedCounter = 0;
+        clickedCounter = 0;
     });
 
     function IsLoading() {
@@ -96,48 +142,7 @@
             backdrop: 'static',
             keyboard: false
         });
-
-        tinyMCE.init({
-            menubar: false,
-            statusbar: true,
-            theme: "modern",
-            style_formats: [
-                {
-                    title: 'Headers', items: [
-                        { title: 'Header 1', format: 'h1' },
-                        { title: 'Header 2', format: 'h2' },
-                        { title: 'Header 3', format: 'h3' },
-                        { title: 'Header 4', format: 'h4' },
-                        { title: 'Header 5', format: 'h5' },
-                        { title: 'Header 6', format: 'h6' }
-                    ]
-                },
-                {
-                    title: 'Inline', items: [
-                        { title: 'Bold', icon: 'bold', format: 'bold' },
-                        { title: 'Italic', icon: 'italic', format: 'italic' },
-                        { title: 'Underline', icon: 'underline', format: 'underline' },
-                        { title: 'Strikethrough', icon: 'strikethrough', format: 'strikethrough' },
-                        { title: 'Superscript', icon: 'superscript', format: 'superscript' },
-                        { title: 'Subscript', icon: 'subscript', format: 'subscript' }
-                    ]
-                },
-                {
-                    title: 'Alignment', items: [
-                        { title: 'Left', icon: 'alignleft', format: 'alignleft' },
-                        { title: 'Center', icon: 'aligncenter', format: 'aligncenter' },
-                        { title: 'Right', icon: 'alignright', format: 'alignright' },
-                        { title: 'Justify', icon: 'alignjustify', format: 'alignjustify' }
-                    ]
-                }
-            ],
-            indentation : null,
-            selector: "textarea",
-            height: "400",
-            branding: false,
-
-        });
-
+        hideLoader();
     }
 
     function AlertUser(err) {

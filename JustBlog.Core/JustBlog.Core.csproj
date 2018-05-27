@@ -88,6 +88,7 @@
     <Compile Include="Abstract\ICategoryRepository.cs" />
     <Compile Include="Abstract\IPostRepository.cs" />
     <Compile Include="Abstract\ITagRepository.cs" />
+    <Compile Include="Abstract\SortOnColumnEnum.cs" />
     <Compile Include="Concrete\BlogContext.cs" />
     <Compile Include="Concrete\BlogRepository.cs" />
     <Compile Include="Migrations\201803301901293_InitDataBase.cs" />

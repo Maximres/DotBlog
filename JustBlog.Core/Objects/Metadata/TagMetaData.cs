@@ -14,17 +14,21 @@ namespace JustBlog.Core.Objects.Metadata
         { get; set; }
 
         [Required]
-        [MaxLength(50)]
+        [MinLength(3, ErrorMessage = "Минимальная длина 3 символа")]
+        [MaxLength(50, ErrorMessage = "Максимальная длина 50 символов")]
         public string Name
         { get; set; }
 
         [Required]
-        [MaxLength(50)]
+        [MinLength(3, ErrorMessage = "Минимальная длина 3 символа")]
+        [MaxLength(50, ErrorMessage = "Максимальная длина 50 символов")]
+        [RegularExpression(@"^[a-zA-z-_]{2,}$", ErrorMessage = "Только латинские символы, дефис и нижний прочерк")]
         public string UrlSlug
         { get; set; }
 
         [Required]
-        [MaxLength(200)]
+        [MinLength(3, ErrorMessage = "Минимальная длина 3 символа")]
+        [MaxLength(200, ErrorMessage = "Максимальная длина 20 символов")]
         [DataType(DataType.MultilineText)]
         public string Description
         { get; set; }

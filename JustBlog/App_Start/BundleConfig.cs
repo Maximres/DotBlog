@@ -10,10 +10,24 @@ namespace JustBlog
     {
         public static void RegisterBundles(BundleCollection bundles)
         {
+            /*STYLES*/
+
             bundles.Add(new StyleBundle("~/Content/css")
                 .Include("~/Content/*.css",
                 "~/Content/Assets/*.css"));
 
+            bundles.Add(new StyleBundle("~/bundle/font-awesome").Include(
+                   "~/Content/font-awesome.min.css"));
+
+            bundles.Add(new StyleBundle("~/bundle/froalaEditorCSS").Include(
+                    "~/Scripts/froala-editor/css/froala_editor.pkgd.min.css",
+                    "~/Scripts/froala-editor/css/froala_editor.min.css",
+
+                    "~/Scripts/froala-editor/css/froala_style.min.css"));
+
+            bundles.Add(new StyleBundle("~/Content/Dashbord").Include("~/Content/Dashbord.css"));
+
+            /*SCRIPTS*/
 
             bundles.Add(new ScriptBundle("~/bundles/jq")
             .Include("~/Scripts/jquery-{version}.js"));
@@ -29,6 +43,9 @@ namespace JustBlog
             //"~/Scripts/popper-utils.js"
             ));
 
+            bundles.Add(new ScriptBundle("~/bundle/froalaEditorJS")
+                .Include("~/Scripts/froala-editor/js/froala_editor.pkgd.min.js"));
+
             bundles.Add(new ScriptBundle("~/bundles/bootstrapJS")
                 .Include("~/Scripts/bootstrap.js",
                 "~/Scripts/bootstrap.bundle.js"));
@@ -39,6 +56,8 @@ namespace JustBlog
 
             bundles.Add(new ScriptBundle("~/bundles/jquerylib")
                .Include("~/Scripts/jquery-{version}.js"));
+
+            //bundles.IgnoreList.Ignore("*/Content/loadme.css", OptimizationMode.Always);
 
             BundleTable.EnableOptimizations = false;
         }

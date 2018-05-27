@@ -1,4 +1,4 @@
-﻿@model JustBlog.Models.ListViewModel
+﻿@model JustBlog.Models.PagedListViewModel
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -8,9 +8,9 @@
 
     <h1>@ViewBag.Title</h1>
 
-    @if (Model.Posts.Count() > 0)
+    @if (Model.ViewModel.Posts.Count() > 0)
     {
-        foreach (var post in Model.Posts)
+        foreach (var post in Model.ViewModel.Posts)
         {
             @Html.Partial("_PostTemplate", post)
         }
@@ -20,6 +20,10 @@
         <p>Упс! Записей не найдено!</p>
     }
 
-    @Html.Partial("_Pager", Model)
+    @Html.Partial("_Pager", Model.ViewModel)
+
+    @Html.PageLinks(Model.PagingInfo, x => Url.Action("Posts", new { page = x }))
+
+
 
 </div>

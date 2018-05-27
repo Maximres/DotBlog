@@ -48,6 +48,9 @@ namespace JustBlog.Infrastructure
         private void AddBindings()
         {
             _kernel.Bind<IBlogRepository>().To<BlogRepository>();
+            _kernel.Bind<ICategoryRepository>().To<BlogRepository>();
+            _kernel.Bind<IPostRepository>().To<BlogRepository>();
+            _kernel.Bind<ITagRepository>().To<BlogRepository>();
         }
     }
 }

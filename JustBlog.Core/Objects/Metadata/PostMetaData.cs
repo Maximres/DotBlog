@@ -16,45 +16,51 @@ namespace JustBlog.Core.Objects.Metadata
         public int Id
         { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Обязательное поле")]
         [Display(Name = "Заголовок")]
-        [MaxLength(500)]
+        [MinLength(3, ErrorMessage = "Минимальная длина 10 символа")]
+        [MaxLength(500, ErrorMessage = "Максимальная длина 500 символов")]
         public string Title
         { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Обязательное поле")]
         [Display(Name = "Краткое описание")]
-        [MaxLength(5000)]
+        [MinLength(3, ErrorMessage = "Минимальная длина 10 символа")]
+        [MaxLength(5000, ErrorMessage = "Максимальная длина 5000 символов")]
         [DataType(DataType.MultilineText)]
         public string ShortDescription
         { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Обязательное поле")]
         [AllowHtml]
         [Display(Name = "Содержание")]
-        [MaxLength(5000)]
+        [MinLength(3, ErrorMessage = "Минимальная длина 3 символа")]
+        [MaxLength(5000, ErrorMessage = "Максимальная длина 5000 символов")]
         [DataType(DataType.MultilineText)]
         public string Description
         { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Обязательное поле")]
         [Display(Name = "Метаинформация")]
-        [MaxLength(1000)]
+        [MinLength(3, ErrorMessage = "Минимальная длина 3 символа")]
+        [MaxLength(1000, ErrorMessage = "Максимальная длина 1000 символов")]
         public string Meta
         { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Обязательное поле")]
         [Display(Name = "Query параметр")]
-        [MaxLength(200)]
+        [MinLength(3, ErrorMessage = "Минимальная длина 3 символа")]
+        [MaxLength(200, ErrorMessage = "Максимальная длина 200 символов")]
+        [RegularExpression(@"^[a-zA-z-_]{2,}$", ErrorMessage = "Только латинские символы, дефис и нижний прочерк")]
         public string UrlSlug
         { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Обязательное поле")]
         [Display(Name = "Опубликован")]
         public bool Published
         { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Обязательное поле")]
         [Display(Name = "Публикация")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}",
@@ -74,7 +80,7 @@ namespace JustBlog.Core.Objects.Metadata
         public int CategoryId
         { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Обязательное поле")]
         public Category Category
         { get; set; }
 

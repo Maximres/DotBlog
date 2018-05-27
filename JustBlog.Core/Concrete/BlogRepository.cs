@@ -33,10 +33,13 @@ namespace JustBlog.Core.Concrete
         /// <returns></returns>
         public Post Post(int year, int month, string titleSlug)
         {
+            //var posts = _context.Posts;
+            //posts.Include(s => s.Category).Include(s => s.Tags);
+            //return posts.
             return _context.Posts.
                 Include(i => i.Category).
                 Include(i => i.Tags).
-                Where(p => p.PostedOn.Year == year && p.PostedOn.Month == month && p.UrlSlug.Equals(titleSlug)).SingleOrDefault();
+                Where(p => p.PostedOn.Year == year && p.PostedOn.Month == month && p.UrlSlug.Equals(titleSlug)).FirstOrDefault();
         }
 
         public Post Post(int id, bool onlyPublished = true)
@@ -61,10 +64,11 @@ namespace JustBlog.Core.Concrete
                         ToList();
         }
 
-        public IEnumerable<Post> Posts(int pageNo, int pageSize, bool sortByAscending, string sortColumn = "PostedOn")
+        public IEnumerable<Post> Posts(int pageNo, int pageSize, bool sortByAscending, SortOnColumnEnum sortColumn = SortOnColumnEnum.PostedOn)
         {
+            var stringEnumType = Enum.GetName(typeof(SortOnColumnEnum), sortColumn);
             IList<Post> posts;
-            switch (sortColumn)
+            switch (stringEnumType)
             {
                 case "Title":
                     posts = _context.Posts.
@@ -204,7 +208,7 @@ namespace JustBlog.Core.Concrete
                     //dbEntry.ShortDescription = post.ShortDescription;
                     dbEntry.Tags = post.Tags;
                     //dbEntry.Title = post.Title;
-                    //dbEntry.UrlSlug = post.UrlSlug;
+                    dbEntry.UrlSlug = post.UrlSlug;
                 }
                 //_context.Caregories.Add(new Objects.Category() { Name = "Life style", UrlSlug = "life-style", Description = "Category about life"});
             }
@@ -412,6 +416,11 @@ namespace JustBlog.Core.Concrete
                              .GetProperties(BindingFlags.Public | BindingFlags.Instance)
                              .Select(x => x.Name)
                              .ToList();
+        }
+
+        public Post PostWithSameSlug(string slug)
+        {
+            return _context.Posts.Where(s => s.UrlSlug.ToLower() == slug.Trim().ToLower()).FirstOrDefault();
         }
         #endregion
     }

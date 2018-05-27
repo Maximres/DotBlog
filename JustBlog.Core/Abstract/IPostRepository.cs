@@ -59,13 +59,13 @@ namespace JustBlog.Core.Abstract
         /// <param name="sortByAscending"></param>
         /// <param name="sortColumn">Свойства класса <see cref="Post"/></param>
         /// <returns></returns>
-        IEnumerable<Post> Posts(int pageNo, int pageSize, bool sortByAscending, string sortColumn = "PostedOn");
+        IEnumerable<Post> Posts(int pageNo, int pageSize, bool sortByAscending, SortOnColumnEnum sortColumn = SortOnColumnEnum.PostedOn);
 
         /// <summary>
         /// Возвращает количество постов
         /// </summary>
         /// <returns></returns>
-        int TotalPosts(bool checkIsPublished = true);
+        int TotalPosts(bool onlyPublished = true);
 
         /// <summary>
         /// Возвращает все посты, которые соответсвуют категории <paramref name="categorySlug"/>
@@ -114,5 +114,12 @@ namespace JustBlog.Core.Abstract
         /// <param name="search"></param>
         /// <returns></returns>
         int TotalPostsForSearch(string search);
+
+        /// <summary>
+        /// Возвращает истину, если UrlSlug уже существует.
+        /// </summary>
+        /// <param name="slug"></param>
+        /// <returns></returns>
+        Post PostWithSameSlug(string slug);
     }
 }
