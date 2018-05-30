@@ -32,7 +32,7 @@ namespace JustBlog.Core.Objects
 
         [Required(ErrorMessage = "Обязательное поле")]
         [MaxLength(50, ErrorMessage = "Длина не должна превышать 50 символов")]
-        [RegularExpression(@"![a-zA-z-_]{2,}$", ErrorMessage = "Только латинские символы, дефис и нижний прочерк")]
+        [RegularExpression(@"^[a-zA-z-_0-9]{2,}$", ErrorMessage = "Только латинские символы, цифры, дефис и нижний прочерк")]
         public string UrlSlug
         { get; set; }
 

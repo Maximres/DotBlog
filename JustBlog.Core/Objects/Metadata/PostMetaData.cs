@@ -44,6 +44,7 @@ namespace JustBlog.Core.Objects.Metadata
         [Display(Name = "Метаинформация")]
         [MinLength(3, ErrorMessage = "Минимальная длина 3 символа")]
         [MaxLength(1000, ErrorMessage = "Максимальная длина 1000 символов")]
+        [RegularExpression(@"^[a-zA-z-_\s0-9]{2,}$", ErrorMessage = "Только латинские символы, дефис и нижний прочерк")]
         public string Meta
         { get; set; }
 
@@ -51,7 +52,7 @@ namespace JustBlog.Core.Objects.Metadata
         [Display(Name = "Query параметр")]
         [MinLength(3, ErrorMessage = "Минимальная длина 3 символа")]
         [MaxLength(200, ErrorMessage = "Максимальная длина 200 символов")]
-        [RegularExpression(@"^[a-zA-z-_]{2,}$", ErrorMessage = "Только латинские символы, дефис и нижний прочерк")]
+        [RegularExpression(@"^[a-zA-z-_0-9]{2,}$", ErrorMessage = "Только латинские символы, цифры, дефис и нижний прочерк")]
         public string UrlSlug
         { get; set; }
 

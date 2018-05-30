@@ -2,13 +2,13 @@
 @{
     ViewBag.Title = "Admin";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    AjaxOptions ajaxOptions = new AjaxOptions
-    {
-        UpdateTargetId = "tableBody",
-        Url = Url.Action("GetCategoriesData", "Category"),
-        InsertionMode = InsertionMode.Replace,
-        OnSuccess = "ajaxSuccess"
-    };
+    //AjaxOptions ajaxOptions = new AjaxOptions
+    //{
+    //    UpdateTargetId = "tableBody",
+    //    Url = Url.Action("GetCategoriesData", "Category"),
+    //    InsertionMode = InsertionMode.Replace,
+    //    OnSuccess = "ajaxSuccess"
+    //};
 }
 
 <script type="text/javascript">
@@ -41,46 +41,26 @@
             @Html.ActionLink("Categories", "GetCategoriesData", "Admin", new { area = "Admin" }, new { @class = "btn btn-primary ml-auto", role = "button" })*@
     </div>
 
+    <!-- Content -->
     <div class="panel-body" id="tableBody">
         @Html.Action("GetPostsData", "Post", new { })
-        
     </div>
-    <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editModal" id="btnModal">
-        Launch demo modal
-    </button>
 
-    <!-- Modal -->
+    <!-- Modal (Editor) -->
     <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content" id="target">
-                
+                @* This node exists to be a target for modal windows. Modal should aim to target *@
             </div>
         </div>
     </div>
 
 </div>
 
-<div id="froala-editor1"></div>
-<div>
-    @using (Html.BeginForm())
-    {
-        <div>
-            @Html.TextArea("Hello", new { })
-        </div>
-    }
-</div>
-
-<p>
-    <a id="btn-destroy" href="#" class="btn r-btn highlight text-small">Destroy</a>
-    <a id="btn-init" href="#" class="btn r-btn text-small">Init</a>
-</p>
-
-<input name='tags3' placeholder='Write some tags' pattern='^[A-Za-z_ ]{1,15}$'>
 
 @section Scripts {
 
-    <script> 
+    @*<script> 
         $(document).ready(function () {
 
             var input3 = document.querySelector('input[name=tags3]'),
@@ -123,7 +103,7 @@
                 $('div#froala-editor').froalaEditor();
             }
 
-        });
+        });*@
 
         
         

@@ -181,38 +181,55 @@ namespace JustBlog.Core.Concrete
         /// <param name="post"></param>
         public void SavePost(Post post)
         {
-            if (post.Id == 0)
+            try
             {
-                _context.Posts.Add(post);
-            }
-            else
-            {
-                var dbEntry = _context.Posts.Find(post.Id);
 
-
-                if (dbEntry != null)
+                if (post.Id == 0)
                 {
-                    if (dbEntry.Equals(post))
+                    _context.Posts.Add(post);
+                }
+                else
+                {
+                    var dbEntry = _context.Posts.Include(t => t.Tags).Include(c => c.Category).FirstOrDefault(s => s.Id == post.Id);
+
+                    if (dbEntry != null)
                     {
+                        if (post.Tags == null || post.Tags.Count <= 0)
+                        {
+                            dbEntry.Tags.Clear();
+                        }
+                        else
+                        {
+                            dbEntry.Tags.Clear();
+                            foreach (var item in post.Tags)
+                            {
+                                dbEntry.Tags.Add(item);
+                            }
+                        }
+
+                        _context.Entry(dbEntry).CurrentValues.SetValues(post);
+                        //dbEntry.Category = post.Category;
+                        //dbEntry.CategoryId = post.CategoryId;
+                        //dbEntry.Description = post.Description;
+                        //dbEntry.Meta = post.Meta;
+                        //dbEntry.Modified = post.Modified;
+                        //dbEntry.PostedOn = post.PostedOn;
+                        //dbEntry.Published = post.Published;
+                        //dbEntry.ShortDescription = post.ShortDescription;
+                        //dbEntry.Tags = post.Tags;
+                        //dbEntry.Title = post.Title;
+                        //dbEntry.UrlSlug = post.UrlSlug;
 
                     }
-                    _context.Entry(dbEntry).CurrentValues.SetValues(post);
 
-                    dbEntry.Category = post.Category;
-                    //dbEntry.CategoryId = post.CategoryId;
-                    //dbEntry.Description = post.Description;
-                    //dbEntry.Meta = post.Meta;
-                    //dbEntry.Modified = post.Modified;
-                    //dbEntry.PostedOn = post.PostedOn;
-                    //dbEntry.Published = post.Published;
-                    //dbEntry.ShortDescription = post.ShortDescription;
-                    dbEntry.Tags = post.Tags;
-                    //dbEntry.Title = post.Title;
-                    dbEntry.UrlSlug = post.UrlSlug;
                 }
-                //_context.Caregories.Add(new Objects.Category() { Name = "Life style", UrlSlug = "life-style", Description = "Category about life"});
+                _context.SaveChanges();
             }
-            _context.SaveChanges();
+            catch (Exception)
+            {
+                throw;
+            }
+
         }
 
         public int TotalPosts(bool onlyPublished = true)
@@ -442,7 +459,7 @@ namespace JustBlog.Core.Concrete
             {
                 return false;
             }
-            
+
             foreach (var tag in tags)
             {
                 if (tag.Name == query.Name)

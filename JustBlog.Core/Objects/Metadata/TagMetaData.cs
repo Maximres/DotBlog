@@ -22,7 +22,7 @@ namespace JustBlog.Core.Objects.Metadata
         [Required]
         [MinLength(3, ErrorMessage = "Минимальная длина 3 символа")]
         [MaxLength(50, ErrorMessage = "Максимальная длина 50 символов")]
-        [RegularExpression(@"^[a-zA-z-_]{2,}$", ErrorMessage = "Только латинские символы, дефис и нижний прочерк")]
+        [RegularExpression(@"^[a-zA-z-_0-9]{2,}$", ErrorMessage = "Только латинские символы, цифры, дефис и нижний прочерк")]
         public string UrlSlug
         { get; set; }
 

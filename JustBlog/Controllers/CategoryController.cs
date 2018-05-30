@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using JustBlog.Core.Objects;
 
 namespace JustBlog.Controllers
 {
@@ -24,6 +25,12 @@ namespace JustBlog.Controllers
             return PartialView("~/Views/Admin/GetCategoriesData.cshtml", _repository.Categories());
         }
 
+        public ActionResult EditCategory(int id)
+        {
+            var _category = _repository.Category(id) ?? new Category { Id = 0};
+
+        }
+
         //TODO: handle ajax form post
         [HttpPost]
         public ActionResult DeleteCategory(int id)
@@ -35,5 +42,7 @@ namespace JustBlog.Controllers
             //}
             return PartialView("~/Views/Admin/GetCategoriesData.cshtml", _repository.Categories());
         }
+
+
     }
 }

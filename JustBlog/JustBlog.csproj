@@ -495,12 +495,12 @@
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
-    <Content Include="Views\Admin\GetPostsData.cshtml" />
     <Content Include="Views\Admin\GetCategoriesData.cshtml" />
-    <Content Include="Views\Admin\EditPost.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\tinymce_jquery_full.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Dashboard.cshtml" />
+    <Content Include="Views\Post\_EditPost.cshtml" />
+    <Content Include="Views\Post\_GetPostsData.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -524,7 +524,6 @@
     <Folder Include="Content\Images\" />
     <Folder Include="Views\Category\" />
     <Folder Include="Views\Image\" />
-    <Folder Include="Views\Post\" />
     <Folder Include="Views\Shared\EditorTemplates\" />
     <Folder Include="Views\Tag\" />
   </ItemGroup>

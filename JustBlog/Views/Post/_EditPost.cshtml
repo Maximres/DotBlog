@@ -110,11 +110,12 @@
 
         <div class="form-group">
             @Html.LabelFor(m => m.Post.Description, new { @class = "control-label col-md-6" })
+            @Html.ValidationMessageFor(m => m.Post.Description, "", new { @class = "text-danger" })
             <div class="col-12">
                 @Html.TextAreaFor(s =>s.Post.Description,
 
                                  new { @class = "form-control", rows = 10, overflow_y = "scroll", resize = "none", id = "froala-editor" })
-                @Html.ValidationMessageFor(m => m.Post.Description, "", new { @class = "text-danger" })
+
             </div>
         </div>
 
@@ -209,7 +210,7 @@
         var input3 = document.querySelector('input[name=tags]'),
             tagify3 = new Tagify(input3, {
                 delimiters: ", ",
-                suggestionsMinChars: 1,
+                suggestionsMinChars: 0,
                 maxTags: 7,
                 blacklist: ["fuck", "shit", "pussy"],
                 enforceWhitelist: true,
@@ -278,6 +279,7 @@
         //подтверждение закрытие модальной формы
         $("#btnClose1, #btnClose2").click(function (e) {
             e.preventDefault();
+            //debugger;
             if (dataChanged) {
                 var closeConfirmed = confirm("Были внесены изменения. \nЗакрыть окно?");
                 if (closeConfirmed) {
@@ -289,7 +291,7 @@
                 $("#editModal").modal('hide');
                 dataChanged = false;
             }
-            $("#target").empty();
+            //$("#target").empty();
         })
     })
 
