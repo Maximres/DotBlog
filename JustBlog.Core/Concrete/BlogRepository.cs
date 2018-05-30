@@ -394,22 +394,30 @@ namespace JustBlog.Core.Concrete
         /// <param name="category"></param>
         public void SaveCategory(Category category)
         {
-            if (category.Id == 0)
+            try
             {
-                _context.Caregories.Add(category);
-            }
-            else
-            {
-                var dbEntry = _context.Caregories.Find(category);
-                if (dbEntry != null)
+                if (category.Id == 0)
                 {
-                    dbEntry.Name = category.Name;
-                    dbEntry.Posts = category.Posts;
-                    dbEntry.UrlSlug = category.UrlSlug;
-                    dbEntry.Description = category.Description;
+                    _context.Caregories.Add(category);
                 }
+                else
+                {
+                    var dbEntry = _context.Caregories.Find(category.Id);
+                    if (dbEntry != null)
+                    {
+                        dbEntry.Name = category.Name;
+                        //dbEntry.Posts = category.Posts;
+                        dbEntry.UrlSlug = category.UrlSlug;
+                        dbEntry.Description = category.Description;
+                    }
+                }
+                _context.SaveChanges();
             }
-            _context.SaveChanges();
+            catch (Exception)
+            {
+                throw;
+            }
+           
         }
 
         public Category DeleteCategory(int id)
@@ -438,6 +446,13 @@ namespace JustBlog.Core.Concrete
         public Post PostWithSameSlug(string slug)
         {
             return _context.Posts.Where(s => s.UrlSlug.ToLower() == slug.Trim().ToLower()).FirstOrDefault();
+        }
+
+        public Category CategoryWithSameSlug(string slug)
+        {
+            return _context
+                .Caregories
+                .FirstOrDefault(c => c.UrlSlug.ToLower() == slug.ToLower());
         }
         #endregion
     }

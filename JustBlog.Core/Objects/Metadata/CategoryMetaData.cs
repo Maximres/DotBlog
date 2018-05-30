@@ -25,7 +25,7 @@ namespace JustBlog.Core.Objects
         [Display(Name = "Описание")]
         [UIHint("MultilineText")]
         [DataType(DataType.MultilineText)]
-        [MinLength(20, ErrorMessage = "Минимальная длина 20 символа")]
+        [MinLength(3, ErrorMessage = "Минимальная длина 20 символа")]
         [MaxLength(200, ErrorMessage = "Максимальная длина 200 символов")]
         public string Description
         { get; set; }

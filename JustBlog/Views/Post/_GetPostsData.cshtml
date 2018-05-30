@@ -24,7 +24,7 @@
         //Confirm = "return confirmDelete()",
         UpdateTargetId = "tableBody",
         OnBegin = "openDialog",
-        InsertionMode = InsertionMode.InsertAfter,
+        InsertionMode = InsertionMode.Replace,
         Url = Url.Action("DeletePost", "Post"),
         HttpMethod = "Post",
         OnSuccess = "processView"
@@ -112,9 +112,10 @@ ADD PAGINATION
         return false;
     };
 
+    //OnSuccess ajax
     function processView() {
         hideLoader();
-        $("#table-striped").first().remove();
+        //$("#table-striped").first().remove();
         //prv.remove();
     }
 
