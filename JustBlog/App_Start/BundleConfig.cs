@@ -34,13 +34,9 @@ namespace JustBlog
 
             bundles.Add(new ScriptBundle("~/bundles/clientfeaturesscripts")
             .Include(
-            //"~/Scripts/jquery.validate.js",
-            //"~/Scripts/jquery.validate.unobtrusive.js",
             "~/Scripts/jquery.unobtrusive-ajax.js",
             "~/Scripts/tagify.js",
             "~/Scripts/jQuery.tagify.js"
-            //"~/Scripts/popper.js",
-            //"~/Scripts/popper-utils.js"
             ));
 
             bundles.Add(new ScriptBundle("~/bundle/froalaEditorJS")
@@ -51,11 +47,11 @@ namespace JustBlog
                 "~/Scripts/bootstrap.bundle.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryval")
-                .Include("~/Scripts/jquery.validate.js",
-            "~/Scripts/jquery.validate.unobtrusive.js"));
+                .Include("~/Scripts/jquery.validate*",
+                "~/Scripts/jquery.validate.unobtrusive*"));
 
-            bundles.Add(new ScriptBundle("~/bundles/jquerylib")
-               .Include("~/Scripts/jquery-{version}.js"));
+            //bundles.Add(new ScriptBundle("~/bundles/jquerylib")
+               //.Include("~/Scripts/jquery-{version}.js"));
 
             //bundles.IgnoreList.Ignore("*/Content/loadme.css", OptimizationMode.Always);
 

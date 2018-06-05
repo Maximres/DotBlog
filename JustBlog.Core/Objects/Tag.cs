@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
-using JustBlog.Core.Objects.Metadata;
+using JustBlog.Core.Objects;
 
 namespace JustBlog.Core.Objects
 {
+
     [MetadataType(typeof(TagMetaData))]
-    public class Tag
+    public partial class Tag
     {
         /// <summary>
         /// Первичный ключ (явно не указывается)

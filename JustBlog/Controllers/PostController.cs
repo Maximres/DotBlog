@@ -17,7 +17,9 @@ namespace JustBlog.Controllers
     public class PostController : Controller
     {
         readonly IBlogRepository _repository;
-        private const int PAGESIZE = 15;
+        const int PAGESIZE = 15;
+        SortOnColumnEnum SortColumn { get; set; } = SortOnColumnEnum.PostedOn;
+        public bool OrderedByAscending { get; set; } = false;
 
         public PostController(IBlogRepository repository)
         {
@@ -25,8 +27,7 @@ namespace JustBlog.Controllers
         }
 
         [HttpGet]
-        //[OutputCache()]
-        public ActionResult EditPost(int id)
+        public ActionResult EditPost(int id = 0)
         {
             var post = _repository.Posts(false).FirstOrDefault(p => p.Id == id) ?? new Post() {PostedOn = DateTime.Now, Modified = DateTime.Now, Published = true};
             var tags = _repository.Tags();
@@ -48,11 +49,6 @@ namespace JustBlog.Controllers
 
                 //доступные категори
                 CategoriesList = items,
-                //new SelectList(
-                //    categories,
-                //    "Id",
-                //    "Name",
-                //    post.Category.Id),
 
                 //доступные теги
                 TagsListJson = new HtmlString(JsonConvert.SerializeObject(tags.Select(s => s.Name).ToArray()))
@@ -61,32 +57,34 @@ namespace JustBlog.Controllers
 
             var _tagsValue = String.Join(",", post?.Tags?.Select(n => n.Name));
             ViewData["tagsValue"] = new HtmlString(_tagsValue);
-            HttpRuntime.Cache["CategorySelectList"] = items;
 
-            return PartialView("~/Views/Admin/EditPost.cshtml", model);
-        }
-
-        public ActionResult DeletePost(int id)
-        {
-            var post = _repository.Post(id, false);
-            if (post != null)
+            //кеширование категорий для POST запроса
+            if (HttpRuntime.Cache["CategorySelectList"] != null)
             {
-                Post deletedPost = _repository.DeletePost(id);
+                //категории уже закешированы?
+                var categoriesCached = HttpRuntime.Cache["CategorySelectList"].Equals(items);
+                if (false == categoriesCached)
+                {
+                    HttpRuntime.Cache["CategorySelectList"] = items;
+                }
             }
-            var list = _repository.Posts(1, PAGESIZE, false, SortOnColumnEnum.PostedOn);
-            return PartialView("~/Views/Admin/GetPostsData.cshtml", list);
+            else
+            {
+                HttpRuntime.Cache["CategorySelectList"] = items;
+            }
+
+            return PartialView("~/Views/Post/_EditPost.cshtml", model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        //[HandleError()]
         public ActionResult EditPost(PostEditViewModel postEditViewModel, string tags)
         {
-            //var tags1 = Request.Form.GetValues("tags");
-            //TODO: удаляет категорию из проверки,
-            //чтобы позже добавить в зависимости от CategoryListId
+            //TODO: удаляет категорию из проверки
             ModelState.Remove("Post.Category");
-            var tagsArray = tags.Split(',');
-            var slugExists = _repository.PostWithSameSlug(postEditViewModel.Post.UrlSlug);
+
+            var slugExists = _repository.Post(postEditViewModel.Post.UrlSlug);
             if (slugExists != null && slugExists.Id != postEditViewModel.Post.Id)
             {
                 ModelState.AddModelError(String.Empty, "Slug уже существует");
@@ -94,37 +92,55 @@ namespace JustBlog.Controllers
             }
             if (ModelState.IsValid)
             {
+                var _post = postEditViewModel.Post;
+
+                var tagsArray = tags.Split(',');
+                var _tags = (tagsArray != null && string.IsNullOrWhiteSpace(tags) == false) ? _repository.Tags(tagsArray).ToList() : null;
+                _post.Tags = _tags;
+
                 var _categoryId = postEditViewModel.CategoryListId;
                 var _category = _repository.Category(_categoryId);
-                var _post = postEditViewModel.Post;
-                var _tags = tagsArray != null ? _repository.Tags(tagsArray).ToList() : new List<Tag>();
-                _post.Tags = _tags;
                 _post.Category = _category;
                 _post.CategoryId = _categoryId;
-                //_post.UrlSlug = _post.UrlSlug.ToLower();
+
                 //TODO: unroll this command below when post is valid
-                _repository.SavePost(_post);
+                try
+                {
+                    _repository.SavePost(_post);
+
+                }
+                catch (Exception ex)
+                {
+                    return Json(new { success = false, responseText = ex.Message }, JsonRequestBehavior.AllowGet);
+                }
 
                 TempData["message"] = string.Format("{0} has been saved", postEditViewModel.Post.Title);
 
-                return Json(new { success = true, responseText = "Успех!" }, JsonRequestBehavior.AllowGet);
-                //return RedirectToAction("Index");
+                return Json(new { success = true, responseText = $"Пост '{_post.Title}' успешно сохранен" }, JsonRequestBehavior.AllowGet);
             }
             //return View(postEditViewModel);
             return Json(new { success = false, responseText = "Неверный ввод" }, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult CreatePost()
+        public ActionResult DeletePost(int id, int page = 1)
         {
-            return View("EditPost", new Post());
+            Post deletedPost = _repository.DeletePost(id);
+            var list = _repository.Posts(page, PAGESIZE, OrderedByAscending, SortColumn);
+            return PartialView("~/Views/Post/_GetPostsData.cshtml", list);
         }
 
         public ActionResult GetPostsData(bool asc = false, int page = 1, string col = "PostedOn")
         {
+            ViewBag.Title = "Posts";
             var parsedColumn = Enum.TryParse(col, out SortOnColumnEnum columnEnum);
+            if (parsedColumn)
+            {
+                SortColumn = columnEnum;
+            }
+            OrderedByAscending = asc;
             //var page = (page > 0 && page <= _repository.TotalPosts()) ? page : page;
-            var list = _repository.Posts(page, PAGESIZE, false, columnEnum);
-            return PartialView("~/Views/Admin/GetPostsData.cshtml", list);
+            var list = _repository.Posts(page, PAGESIZE, asc, SortColumn);
+            return PartialView("~/Views/Post/_GetPostsData.cshtml", list);
         }
     }
 }

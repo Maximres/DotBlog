@@ -41,6 +41,8 @@ namespace JustBlog
                 new { year = @"\d{4}", month = @"\d{1,2}", title = new LengthRouteConstraint(1,200) }
             );
 
+
+
             //routes.MapRoute(
             //   "Admin",
             //   "Admin/Panel/{action}/{id}",

@@ -8,6 +8,8 @@ using System.Text;
 using System.Data.Entity;
 using System.Threading.Tasks;
 using System.Reflection;
+using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Validation;
 
 namespace JustBlog.Core.Concrete
 {
@@ -20,6 +22,7 @@ namespace JustBlog.Core.Concrete
         public BlogRepository(BlogContext context)
         {
             _context = context;
+            //_context.Configuration.ProxyCreationEnabled = false;
         }
 
         #region Posts
@@ -39,7 +42,7 @@ namespace JustBlog.Core.Concrete
             return _context.Posts.
                 Include(i => i.Category).
                 Include(i => i.Tags).
-                Where(p => p.PostedOn.Year == year && p.PostedOn.Month == month && p.UrlSlug.Equals(titleSlug)).FirstOrDefault();
+                Where(p => p.PostedOn.Year == year && p.PostedOn.Month == month && p.UrlSlug.ToLower().Equals(titleSlug.ToLower().Trim())).FirstOrDefault();
         }
 
         public Post Post(int id, bool onlyPublished = true)
@@ -143,7 +146,7 @@ namespace JustBlog.Core.Concrete
             return _context.Posts.
                         Include(c => c.Category).
                         Include(c => c.Tags).
-                        Where(p => p.Published && p.Category.UrlSlug.Equals(categorySlug)).
+                        Where(p => p.Published && p.Category.UrlSlug.ToLower().Equals(categorySlug.ToLower().Trim())).
                         OrderByDescending(o => o.PostedOn).
                         Skip((pageNo - 1) * pageSize).
                         Take(pageSize).
@@ -168,7 +171,7 @@ namespace JustBlog.Core.Concrete
             return _context.Posts.
                         Include(c => c.Category).
                         Include(c => c.Tags).
-                        Where(p => p.Published && p.Tags.Any(t => t.UrlSlug.Equals(tagSlug))).
+                        Where(p => p.Published && p.Tags.Any(t => t.UrlSlug.ToLower().Equals(tagSlug.ToLower().Trim()))).
                         OrderByDescending(o => o.PostedOn).
                         Skip((pageNo - 1) * pageSize).
                         Take(pageSize).
@@ -181,38 +184,57 @@ namespace JustBlog.Core.Concrete
         /// <param name="post"></param>
         public void SavePost(Post post)
         {
-            if (post.Id == 0)
+            try
             {
-                _context.Posts.Add(post);
-            }
-            else
-            {
-                var dbEntry = _context.Posts.Find(post.Id);
 
-
-                if (dbEntry != null)
+                if (post.Id == 0)
                 {
-                    if (dbEntry.Equals(post))
-                    {
-
-                    }
-                    _context.Entry(dbEntry).CurrentValues.SetValues(post);
-
-                    dbEntry.Category = post.Category;
-                    //dbEntry.CategoryId = post.CategoryId;
-                    //dbEntry.Description = post.Description;
-                    //dbEntry.Meta = post.Meta;
-                    //dbEntry.Modified = post.Modified;
-                    //dbEntry.PostedOn = post.PostedOn;
-                    //dbEntry.Published = post.Published;
-                    //dbEntry.ShortDescription = post.ShortDescription;
-                    dbEntry.Tags = post.Tags;
-                    //dbEntry.Title = post.Title;
-                    dbEntry.UrlSlug = post.UrlSlug;
+                    _context.Posts.Add(post);
                 }
-                //_context.Caregories.Add(new Objects.Category() { Name = "Life style", UrlSlug = "life-style", Description = "Category about life"});
+                else
+                {
+                    var dbEntry = _context.Posts.Include(t => t.Tags).Include(c => c.Category).FirstOrDefault(s => s.Id == post.Id);
+
+                    if (dbEntry != null)
+                    {
+                        if (post.Tags == null || post.Tags.Count <= 0)
+                        {
+                            dbEntry.Tags.Clear();
+                        }
+                        else
+                        {
+                            dbEntry.Tags.Clear();
+                            foreach (var item in post.Tags)
+                            {
+                                dbEntry.Tags.Add(item);
+                            }
+                        }
+
+                        post.UrlSlug = post.UrlSlug.Trim();
+                        post.Description = post.Description.Trim();
+                        post.Meta = post.Meta.Trim();
+                        post.ShortDescription = post.ShortDescription.Trim();
+                        post.Title = post.Title.Trim();
+
+                        _context.Entry(dbEntry).CurrentValues.SetValues(post);
+                    }
+
+                }
+                _context.SaveChanges();
             }
-            _context.SaveChanges();
+            catch (DbUpdateException)
+            {
+                throw new Exception("Возникла ошибка при отправке обновлений");
+            }
+            catch (DbEntityValidationException)
+            {
+                throw new Exception("Возникла ошибка при валидации обновлений");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
         }
 
         public int TotalPosts(bool onlyPublished = true)
@@ -222,7 +244,7 @@ namespace JustBlog.Core.Concrete
 
         public int TotalPostsForCategory(string categorySlug)
         {
-            return _context.Posts.Where(p => p.Published && p.Category.UrlSlug.Equals(categorySlug)).Count();
+            return _context.Posts.Where(p => p.Published && p.Category.UrlSlug.ToLower().Equals(categorySlug.ToLower().Trim())).Count();
         }
 
         public int TotalPostsForSearch(string search)
@@ -236,7 +258,7 @@ namespace JustBlog.Core.Concrete
 
         public int TotalPostsForTag(string tagSlug)
         {
-            return _context.Posts.Where(t => t.Tags.Any(u => u.UrlSlug.Equals(tagSlug))).Count();
+            return _context.Posts.Where(t => t.Tags.Any(u => u.UrlSlug.ToLower().Equals(tagSlug.ToLower().Trim()))).Count();
         }
 
         public Post DeletePost(int id)
@@ -260,22 +282,38 @@ namespace JustBlog.Core.Concrete
         /// <param name="tag"></param>
         public void SaveTag(Tag tag)
         {
-            if (tag.Id == 0)
+            try
             {
-                _context.Tags.Add(tag);
-            }
-            else
-            {
-                var dbEntry = _context.Tags.Find(tag);
-                if (dbEntry != null)
+                if (tag.Id == 0)
                 {
-                    dbEntry.Description = tag.Description;
-                    dbEntry.Name = tag.Name;
-                    dbEntry.Posts = tag.Posts;
-                    dbEntry.UrlSlug = tag.UrlSlug;
+                    _context.Tags.Add(tag);
                 }
+                else
+                {
+                    var dbEntry = _context.Tags.Find(tag.Id);
+                    if (dbEntry != null)
+                    {
+                        dbEntry.Description = tag.Description.Trim();
+                        dbEntry.Name = tag.Name.Trim();
+                        //dbEntry.Posts = tag.Posts;
+                        dbEntry.UrlSlug = tag.UrlSlug.Trim();
+                    }
+                }
+                //_context.SaveChanges();
             }
-            _context.SaveChanges();
+            catch (DbUpdateException)
+            {
+                throw new Exception("Возникла ошибка при отправке обновлений");
+            }
+            catch (DbEntityValidationException)
+            {
+                throw new Exception("Возникла ошибка при валидации обновлений");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
         }
 
         /// <summary>
@@ -285,7 +323,7 @@ namespace JustBlog.Core.Concrete
         /// <returns></returns>
         public Tag Tag(string tagSlug)
         {
-            return _context.Tags.FirstOrDefault(t => t.UrlSlug.Equals(tagSlug));
+            return _context.Tags.FirstOrDefault(t => t.UrlSlug.ToLower().Equals(tagSlug.ToLower().Trim()));
         }
 
         public IEnumerable<Tag> Tags()
@@ -320,7 +358,11 @@ namespace JustBlog.Core.Concrete
 
             //TODO: протестировать время исполнения
             //извлекает сущетсвующие теги из БД, чтобы избежать их дубликации
-            var existingTags = _context.Tags.ToList().Where(s => s.NameSameAs(similarTags)).ToList();
+            var existingTags = _context
+                .Tags
+                .Include(i => i.Posts)
+                .ToList()
+                .Where(s => s.NameSameAs(similarTags));
 
             return existingTags;
         }
@@ -346,9 +388,10 @@ namespace JustBlog.Core.Concrete
         /// <returns></returns>
         public IEnumerable<Category> Categories()
         {
-            return _context.Caregories.
-                OrderBy(p => p.Name).
-                ToList();
+            return _context.Caregories
+                .Include(s => s.Posts)
+                .OrderBy(p => p.Name)
+                .ToList();
         }
 
         /// <summary>
@@ -358,7 +401,7 @@ namespace JustBlog.Core.Concrete
         /// <returns></returns>
         public Category Category(string categorySlug)
         {
-            return _context.Caregories.FirstOrDefault(t => t.UrlSlug.Equals(categorySlug));
+            return _context.Caregories.FirstOrDefault(t => t.UrlSlug.ToLower().Equals(categorySlug.ToLower().Trim()));
         }
 
         /// <summary>
@@ -377,22 +420,40 @@ namespace JustBlog.Core.Concrete
         /// <param name="category"></param>
         public void SaveCategory(Category category)
         {
-            if (category.Id == 0)
+            try
             {
-                _context.Caregories.Add(category);
-            }
-            else
-            {
-                var dbEntry = _context.Caregories.Find(category);
-                if (dbEntry != null)
+                if (category.Id == 0)
                 {
-                    dbEntry.Name = category.Name;
-                    dbEntry.Posts = category.Posts;
-                    dbEntry.UrlSlug = category.UrlSlug;
-                    dbEntry.Description = category.Description;
+                    _context.Caregories.Add(category);
                 }
+                else
+                {
+                    var dbEntry = _context.Caregories.Find(category.Id);
+                    if (dbEntry != null)
+                    {
+                        dbEntry.Name = category.Name.Trim();
+                        //dbEntry.Posts = category.Posts;
+                        dbEntry.UrlSlug = category.UrlSlug.Trim();
+                        dbEntry.Description = category.Description.Trim();
+
+                        throw new DbUpdateException();
+                    }
+                }
+                _context.SaveChanges();
             }
-            _context.SaveChanges();
+            catch (DbUpdateException)
+            {
+                throw new Exception("Возникла ошибка при отправке обновлений");
+            }
+            catch (DbEntityValidationException)
+            {
+                throw new Exception("Возникла ошибка при валидации обновлений");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+           
         }
 
         public Category DeleteCategory(int id)
@@ -418,10 +479,21 @@ namespace JustBlog.Core.Concrete
                              .ToList();
         }
 
-        public Post PostWithSameSlug(string slug)
+        public Post Post(string titleSlug)
         {
-            return _context.Posts.Where(s => s.UrlSlug.ToLower() == slug.Trim().ToLower()).FirstOrDefault();
+            return _context
+                .Posts
+                .FirstOrDefault(s => s.UrlSlug.ToLower() == titleSlug.ToLower().Trim());
         }
+
+        public Tag Tag(int id)
+        {
+            //_context.Configuration.ProxyCreationEnabled = false;
+            return _context
+                .Tags
+                .FirstOrDefault(s => s.Id == id);
+        }
+
         #endregion
     }
 
@@ -442,7 +514,7 @@ namespace JustBlog.Core.Concrete
             {
                 return false;
             }
-            
+
             foreach (var tag in tags)
             {
                 if (tag.Name == query.Name)

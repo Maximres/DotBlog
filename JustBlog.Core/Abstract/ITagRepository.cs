@@ -17,6 +17,13 @@ namespace JustBlog.Core.Abstract
         Tag Tag(string tagSlug);
 
         /// <summary>
+        /// Возвращает тег по <paramref name="id"/>
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Tag Tag(int id);
+
+        /// <summary>
         /// Возвращает все теги
         /// </summary>
         /// <returns></returns>

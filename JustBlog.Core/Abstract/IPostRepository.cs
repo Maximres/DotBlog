@@ -27,6 +27,13 @@ namespace JustBlog.Core.Abstract
         /// <param name="id"></param>
         /// <returns></returns>
         Post Post(int id, bool onlyPublished);
+        
+        /// <summary>
+        /// Возвращает пост по <paramref name="titleSlug"/>
+        /// </summary>
+        /// <param name="titleSlug"></param>
+        /// <returns></returns>
+        Post Post(string titleSlug);
 
         /// <summary>
         /// Возвращает определенный пост, в зависимости от его имени в строке запроса <paramref name="titleSlug"/>
@@ -115,11 +122,5 @@ namespace JustBlog.Core.Abstract
         /// <returns></returns>
         int TotalPostsForSearch(string search);
 
-        /// <summary>
-        /// Возвращает истину, если UrlSlug уже существует.
-        /// </summary>
-        /// <param name="slug"></param>
-        /// <returns></returns>
-        Post PostWithSameSlug(string slug);
     }
 }

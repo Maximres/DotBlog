@@ -1,0 +1,151 @@
+﻿@model JustBlog.Models.Admin.PostEditViewModel
+@using JustBlog.Models.Admin
+@using JustBlog.Core.Objects
+@{
+    ViewBag.Title = "Edit post";
+    //Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    Layout = null;
+    var mod = Model;
+    var cachedSelectList = Cache["CategorySelectList"] as List<SelectListItem>;
+    string selectedId = cachedSelectList.FirstOrDefault(s => s.Selected)?.Value ?? "0";
+
+}
+
+@*<script src="~/Scripts/jquery-3.3.1.js"></script>*@
+@*<script src="~/Scripts/jquery.js"></script>*@
+<script src="~/Scripts/jquery.validate.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+@*<script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>*@
+
+<div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLongTitle">Редактирование поста</h5>
+    <button type="button" class="close" aria-label="Close" id="btnClose1">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="modal-body">
+    @using (Html.BeginForm("EditPost", "Post", FormMethod.Post, new { id = "submittedForm", enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        
+
+        @Html.HiddenFor(m => m.Post.Id)
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Post.Title, new { @class = "control-label col-md-6" })
+            <div class="col-12">
+                @Html.TextBoxFor(m => m.Post.Title,
+                     new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Post.Title, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Post.ShortDescription, new { @class = "control-label col-md-6" })
+            <div class="col-12">
+                @Html.TextBoxFor(m => m.Post.ShortDescription,
+                        new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Post.ShortDescription, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Post.Meta, new { @class = "control-label col-md-6" })
+            <div class="col-12">
+                @Html.TextBoxFor(m => m.Post.Meta,
+                          new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Post.Meta, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Post.UrlSlug, new { @class = "control-label col-md-6" })
+            <div class="col-12">
+                @Html.TextBoxFor(m => m.Post.UrlSlug,
+                          new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Post.UrlSlug, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Post.Published, new { @class = "control-label" })
+            <div class="col-12">
+                @Html.EditorFor(m => m.Post.Published,
+                               new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(m => m.Post.Published, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Post.PostedOn, new { @class = "control-label col-md-6" })
+            <div class="col-12">
+                @Html.EditorFor(m => m.Post.PostedOn,
+                       new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(m => m.Post.PostedOn, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Post.Modified, new { @class = "control-label col-md-6" })
+            <div class="col-12">
+                @Html.EditorFor(m => m.Post.Modified,
+                                 new { htmlAttributes = new { @class = "form-control", id = "datePicker" } })
+                @Html.ValidationMessageFor(m => m.Post.Modified, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Категория", new { @class = "control-label col-md-6" })
+            <div class="col-12">
+                @Html.DropDownListFor(m => m.CategoryListId,
+                            cachedSelectList,
+                            new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.CategoryListId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Теги", new { @class = "control-label col-md-6" })
+            <div class="col-12">
+                <input name='tags' value="@ViewData["tagsValue"]">
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Post.Description, new { @class = "control-label col-md-6" })
+            @Html.ValidationMessageFor(m => m.Post.Description, "", new { @class = "text-danger" })
+            <div class="col-12">
+                @Html.TextAreaFor(s =>s.Post.Description,
+
+                  new { @class = "form-control", rows = 10, overflow_y = "scroll", resize = "none", id = "froala-editor" })
+
+            </div>
+        </div>
+
+
+        <div class="modal-footer">
+            <input type="submit" value="Submit" class="btn btn-primary" id="btnSubmit" />
+            <button type="button" class="btn btn-secondary closefirstmodal" id="btnClose2">Close</button>
+        </div>
+
+
+    }
+</div>
+
+<script>
+
+    var _selectedIndex = @selectedId;
+    var _postPostAction = '@Url.Action("EditPost", "Post")';
+    var _tags = @Model.TagsListJson;
+    var _getPostsData = '@Url.Action("GetPostsData", "Post")';
+    var _getImage = '@Url.Action("TakeImage", "Image")';
+
+</script>
+
+
+@Scripts.Render(Url.Content("~/Scripts/Assets/Post/EditPost/pagePostControl.js?version=" + DateTime.Now.Ticks.ToString()))
+
+

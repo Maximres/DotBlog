@@ -25,14 +25,14 @@ namespace JustBlog.Core.Objects
         [Display(Name = "Описание")]
         [UIHint("MultilineText")]
         [DataType(DataType.MultilineText)]
-        [MinLength(20, ErrorMessage = "Минимальная длина 20 символа")]
+        [MinLength(3, ErrorMessage = "Минимальная длина 20 символа")]
         [MaxLength(200, ErrorMessage = "Максимальная длина 200 символов")]
         public string Description
         { get; set; }
 
         [Required(ErrorMessage = "Обязательное поле")]
         [MaxLength(50, ErrorMessage = "Длина не должна превышать 50 символов")]
-        [RegularExpression(@"![a-zA-z-_]{2,}$", ErrorMessage = "Только латинские символы, дефис и нижний прочерк")]
+        [RegularExpression(@"^[a-zA-z-_0-9]{2,}$", ErrorMessage = "Только латинские символы, цифры, дефис и нижний прочерк")]
         public string UrlSlug
         { get; set; }
 

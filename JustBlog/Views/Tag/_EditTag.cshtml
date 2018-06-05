@@ -1,0 +1,99 @@
+﻿@model JustBlog.Models.Admin.TagEditViewModel
+
+@{
+    ViewBag.Title = "Edit tag";
+    Layout = null;
+    HtmlHelper.ClientValidationEnabled = true;
+    HtmlHelper.UnobtrusiveJavaScriptEnabled = true;
+}
+
+
+<script src="~/Scripts/jquery.validate.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+
+<div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLongTitle">Редактирование тега</h5>
+    <button type="button" class="close" aria-label="Close" id="btnClose1">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+
+<div class="modal-body">
+    @using (Html.BeginForm("EditTag", "Tag", FormMethod.Post, new { id = "submittedForm" }))
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        @Html.HiddenFor(m => m.Tag.Id)
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Tag.Name, new { @class = "control-label col-md-6" })
+            <div class="col-12">
+                @Html.TextBoxFor(m => m.Tag.Name, new  { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Tag.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+
+            @Html.LabelFor(m => m.Tag.UrlSlug, new { @class = "control-label col-md-6" })
+            <div class="col-12 input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="example-url">https://example.com/tags/</span>
+                </div>
+                @Html.TextBoxFor(m => m.Tag.UrlSlug,  new { @class = "form-control", id = "example-url", aria_describedby = "example-url" } )
+                @Html.ValidationMessageFor(m => m.Tag.UrlSlug, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Tag.Description, new { @class = "control-label col-md-6" })
+            <div class="col-12">
+                @Html.TextBoxFor(m => m.Tag.Description,  new { @class = "form-control" } )
+                @Html.ValidationMessageFor(m => m.Tag.Description, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @if (Model.IncludePosts)
+            {
+                <p>
+                    <button class="btn btn-primary ml-2" id="btnShowPosts" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                        Показать связанные посты
+                    </button>
+                </p>
+                <div class="collapse" id="collapseExample">
+                    <div class="card card-body" id="postsTarget">
+                    </div>
+                </div>
+            }
+            else
+            {
+                <p>
+                    <button class="btn btn-primary ml-2" type="button">
+                        Показать связанные посты
+                    </button>
+                </p>
+            }
+        </div>
+
+        <div class="modal-footer">
+            <input type="submit" value="Submit" class="btn btn-primary" id="btnSubmit" />
+            <button type="button" class="btn btn-secondary closefirstmodal" id="btnClose2">Close</button>
+        </div>
+    }
+</div>
+
+@*@Scripts.Render("~/bundles/jqueryval")*@
+
+<script>
+    var _getRalatedPosts = '@Url.Action("PostsForTag", "Tag", new { id = Model.Tag.Id })';
+    var _postTagAction = '@Url.Action("EditTag", "Tag")';
+    var _successedTags = '@Url.Action("GetTagsData", "Tag")';
+
+</script>
+
+@Scripts.Render(Url.Content("~/Scripts/Assets/Tag/EditTag/pageTagControl.js"));
+

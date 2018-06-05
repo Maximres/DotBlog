@@ -8,10 +8,10 @@
     <meta name="description" content="@(ViewBag.Description ?? ConfigurationManager.AppSettings["MetaDescription"])" />
     <meta name="author" content="@ConfigurationManager.AppSettings["Author"]" />
     <title>@ViewBag.Title</title>
-   
-    
-    @Styles.Render("~/Content/css")
 
+
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/jq")
 </head>
 
 <body>
@@ -32,7 +32,7 @@
         <header></header>
 
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="#">TheBlog</a>
+            <a class="navbar-brand" href='@Url.Action("Posts", "Blog", null,Request.Url.Scheme)'>TheBlog</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -68,14 +68,14 @@
     </div>
 
     <!-- Stylesheets and scripts -->
-    @Scripts.Render("~/bundles/jquerylib");
+    @*@Scripts.Render("~/bundles/jquerylib");*@
     @Scripts.Render("~/Scripts/Assets/loaderManager.js");
  
 
     @* @Scripts.Render("~/bundles/clientfeaturesscripts")*@
     @Scripts.Render("~/bundles/bootstrapJS")
     <script src="@Url.Content("~/Scripts/Assets/SearchConfirm.js")"></script>
-    @RenderSection("Scripts", false)
+    @RenderSection("scripts", false)
 
 </body>
 </html>
