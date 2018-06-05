@@ -33,23 +33,21 @@
 }
 
 
-<div class="panel panel-default">
-    <div class="card-footer">
+<div class="mb-2">
         @*@Html.ActionLink("Add a new post", "CreatePost", "Admin",
             new { @class = "btn btn-default" })*@
         @Ajax.ActionLink("Добавить пост", "Admin",
                     null,
                     new AjaxOptions
                     {
-                        Url = Url.RouteUrl(new {controller = "Post", action = "CreatePost"}),
+                        Url = Url.RouteUrl(new {controller = "Post", action = "EditPost", id = 0 }),
                         HttpMethod = "GET",
                         OnBegin = "IsLoading",
                         OnSuccess = "SetContent",
                         OnFailure = "AlertUser"
                     },
-                    new { @class = "btn btn-default" }
+                    new { @class = "btn btn-outline-primary" }
                 )
-    </div>
 </div>
 
 <table class="table table-striped table-condensed table-bordered">

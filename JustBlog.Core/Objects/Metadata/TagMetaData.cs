@@ -2,17 +2,21 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace JustBlog.Core.Objects.Metadata
 {
+    [DataContract]
     public class TagMetaData
     {
+        [DataMember]
         [ScaffoldColumn(false)]
         public int Id
         { get; set; }
 
+        [DataMember]
         [Required]
         [MinLength(3, ErrorMessage = "Минимальная длина 3 символа")]
         [MaxLength(50, ErrorMessage = "Максимальная длина 50 символов")]

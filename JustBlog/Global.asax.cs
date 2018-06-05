@@ -21,6 +21,7 @@ namespace JustBlog
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             DependencyResolver.SetResolver(new NinjectDependencyResolver());
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+            //System.Web.Mvc.DataAnnotationsModelValidatorProvider.RegisterAdapter
 
         }
     }

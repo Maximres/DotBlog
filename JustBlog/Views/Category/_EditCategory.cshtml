@@ -5,7 +5,7 @@
 }
 
 <div class="modal-header">
-    <h5 class="modal-title" id="exampleModalLongTitle">Edit Post</h5>
+    <h5 class="modal-title" id="exampleModalLongTitle">Редактирование категории</h5>
     <button type="button" class="close" aria-label="Close" id="btnClose1">
         <span aria-hidden="true">&times;</span>
     </button>
@@ -43,6 +43,27 @@
                     @Html.ValidationMessageFor(model => model.Category.Description, "", new { @class = "text-danger" })
                 </div>
             </div>
+            <div class="form-group">
+                @if (Model.IncludedPosts != null)
+                {
+                    <p>
+                        <button class="btn btn-primary ml-2" id="btnShowPosts" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                            Показать связанные посты
+                        </button>
+                    </p>
+                    <div class="collapse" id="collapseExample">
+                        <div class="card card-body" id="postsTarget">
+                            
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample" disabled>
+                        Link with href
+                    </a>
+                }
+            </div>
 
         </div>
 
@@ -58,6 +79,12 @@
 <script>
     $(function () {
         let dataChanged = false;
+
+        $("#btnShowPosts").click(function (e) {
+            if ($("#postsTarget").has("#")) {
+
+            }
+        });
 
         $("#submittedForm").submit(function (e) {
             clickedOnce = true;
@@ -92,7 +119,22 @@
                             $("#editModal").modal('hide');
                             dataChanged = false;
                             //reload page
-                            location.reload();
+                            //location.reload();
+
+                            $.ajax({
+                                method: "GET",
+                                url: '@Url.Action("GetCategoriesData", "Category")',
+                                dataType: "html",
+                                //update partly
+                                success: function (response) {
+                                    $("#tableBody").empty().html(response);
+                                },
+                                //update fully
+                                error: function () {
+                                    location.reload();
+                                }
+                            });
+
                         } else {
                             // DoSomethingElse()
                             alert(response.responseText);

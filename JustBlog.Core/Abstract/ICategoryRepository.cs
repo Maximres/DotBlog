@@ -41,6 +41,5 @@ namespace JustBlog.Core.Abstract
         /// <param name="category"></param>
         void SaveCategory(Category category);
 
-        Category CategoryWithSameSlug(string slug);
     }
 }

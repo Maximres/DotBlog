@@ -30,7 +30,7 @@ namespace JustBlog.Controllers
         }
 
         [HttpGet]
-        public ActionResult EditCategory(int id, int page = 1)
+        public ActionResult EditCategory(int id = 0, int page = 1)
         {
             var _category = _categoryRepository.Category(id);
             CategoryEditViewModel model;
@@ -61,7 +61,7 @@ namespace JustBlog.Controllers
         [ValidateAntiForgeryToken]
         public JsonResult EditCategory(Category category, Post[] removingPosts)
         {
-            var slugExists = _categoryRepository.CategoryWithSameSlug(category.UrlSlug);
+            var slugExists = _categoryRepository.Category(category.UrlSlug);
             if (slugExists != null && slugExists.Id != category.Id)
             {
                 ModelState.AddModelError(String.Empty, "Slug уже существует");
@@ -69,9 +69,6 @@ namespace JustBlog.Controllers
             }
             if (ModelState.IsValid)
             {
-                category.Description = category.Description.Trim();
-                category.Name = category.Name.Trim();
-                category.UrlSlug = category.UrlSlug.Trim();
                 ///TODO: save category
                 try
                 {

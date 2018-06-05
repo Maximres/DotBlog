@@ -17,7 +17,9 @@ namespace JustBlog.Controllers
     public class PostController : Controller
     {
         readonly IBlogRepository _repository;
-        private const int PAGESIZE = 15;
+        const int PAGESIZE = 15;
+        SortOnColumnEnum SortColumn { get; set; } = SortOnColumnEnum.PostedOn;
+        public bool OrderedByAscending { get; set; } = false;
 
         public PostController(IBlogRepository repository)
         {
@@ -25,8 +27,7 @@ namespace JustBlog.Controllers
         }
 
         [HttpGet]
-        //[OutputCache()]
-        public ActionResult EditPost(int id)
+        public ActionResult EditPost(int id = 0)
         {
             var post = _repository.Posts(false).FirstOrDefault(p => p.Id == id) ?? new Post() {PostedOn = DateTime.Now, Modified = DateTime.Now, Published = true};
             var tags = _repository.Tags();
@@ -48,11 +49,6 @@ namespace JustBlog.Controllers
 
                 //доступные категори
                 CategoriesList = items,
-                //new SelectList(
-                //    categories,
-                //    "Id",
-                //    "Name",
-                //    post.Category.Id),
 
                 //доступные теги
                 TagsListJson = new HtmlString(JsonConvert.SerializeObject(tags.Select(s => s.Name).ToArray()))
@@ -61,20 +57,23 @@ namespace JustBlog.Controllers
 
             var _tagsValue = String.Join(",", post?.Tags?.Select(n => n.Name));
             ViewData["tagsValue"] = new HtmlString(_tagsValue);
-            HttpRuntime.Cache["CategorySelectList"] = items;
+
+            //кеширование категорий для POST запроса
+            if (HttpRuntime.Cache["CategorySelectList"] != null)
+            {
+                //категории уже закешированы?
+                var categoriesCached = HttpRuntime.Cache["CategorySelectList"].Equals(items);
+                if (false == categoriesCached)
+                {
+                    HttpRuntime.Cache["CategorySelectList"] = items;
+                }
+            }
+            else
+            {
+                HttpRuntime.Cache["CategorySelectList"] = items;
+            }
 
             return PartialView("~/Views/Post/_EditPost.cshtml", model);
-        }
-
-        public ActionResult DeletePost(int id)
-        {
-            var post = _repository.Post(id, false);
-            if (post != null)
-            {
-                Post deletedPost = _repository.DeletePost(id);
-            }
-            var list = _repository.Posts(1, PAGESIZE, false, SortOnColumnEnum.PostedOn);
-            return PartialView("~/Views/Post/_GetPostsData.cshtml", list);
         }
 
         [HttpPost]
@@ -82,13 +81,10 @@ namespace JustBlog.Controllers
         //[HandleError()]
         public ActionResult EditPost(PostEditViewModel postEditViewModel, string tags)
         {
-            //TODO: редактировать пост. Теги не сохраняются
-
-            //var tags1 = Request.Form.GetValues("tags");
-            //TODO: удаляет категорию из проверки,
+            //TODO: удаляет категорию из проверки
             ModelState.Remove("Post.Category");
 
-            var slugExists = _repository.PostWithSameSlug(postEditViewModel.Post.UrlSlug);
+            var slugExists = _repository.Post(postEditViewModel.Post.UrlSlug);
             if (slugExists != null && slugExists.Id != postEditViewModel.Post.Id)
             {
                 ModelState.AddModelError(String.Empty, "Slug уже существует");
@@ -120,24 +116,30 @@ namespace JustBlog.Controllers
 
                 TempData["message"] = string.Format("{0} has been saved", postEditViewModel.Post.Title);
 
-                return Json(new { success = true, responseText = "Успех!" }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = true, responseText = $"Пост '{_post.Title}' успешно сохранен" }, JsonRequestBehavior.AllowGet);
             }
             //return View(postEditViewModel);
             return Json(new { success = false, responseText = "Неверный ввод" }, JsonRequestBehavior.AllowGet);
         }
 
-        
-        public ActionResult CreatePost()
+        public ActionResult DeletePost(int id, int page = 1)
         {
-            return RedirectToActionPermanent("EditPost", new { id = 0 });
-            //return View("EditPost", 0);
+            Post deletedPost = _repository.DeletePost(id);
+            var list = _repository.Posts(page, PAGESIZE, OrderedByAscending, SortColumn);
+            return PartialView("~/Views/Post/_GetPostsData.cshtml", list);
         }
 
         public ActionResult GetPostsData(bool asc = false, int page = 1, string col = "PostedOn")
         {
+            ViewBag.Title = "Posts";
             var parsedColumn = Enum.TryParse(col, out SortOnColumnEnum columnEnum);
+            if (parsedColumn)
+            {
+                SortColumn = columnEnum;
+            }
+            OrderedByAscending = asc;
             //var page = (page > 0 && page <= _repository.TotalPosts()) ? page : page;
-            var list = _repository.Posts(page, PAGESIZE, false, columnEnum);
+            var list = _repository.Posts(page, PAGESIZE, asc, SortColumn);
             return PartialView("~/Views/Post/_GetPostsData.cshtml", list);
         }
     }
