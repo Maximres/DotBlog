@@ -7,7 +7,7 @@ using System.Text;
 using System.Web.Mvc;
 using System.Threading.Tasks;
 
-namespace JustBlog.Core.Objects.Metadata
+namespace JustBlog.Core.Objects
 {
     [DisplayName("Пост")]
     public partial class PostMetaData

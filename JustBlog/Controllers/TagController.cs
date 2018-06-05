@@ -66,6 +66,7 @@ namespace JustBlog.Controllers
             }
             if (ModelState.IsValid)
             {
+                
                 try
                 {
                     _tagRepository.SaveTag(tag);

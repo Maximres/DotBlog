@@ -91,19 +91,22 @@ $(function () {
 
 
     $('#CategoryListId').val(_selectedIndex).change();
-    $("#submittedForm").submit(function (e) {
+    $("#submittedPostForm").submit(function (e) {
         clickedOnce = true;
         e.preventDefault();
         //to the implementation in partial view reload the validators
-        var _form = $("#submittedForm")
+
+        var _form = $("#submittedPostForm")
             .removeData("validator") /* added by the raw jquery.validate plugin */
             .removeData("unobtrusiveValidation");/* added by the jquery unobtrusive plugin */
-        $.validator.unobtrusive.parse(_form);
-        _form.validate();
-
         var _formValue = $(this)[0];
+        console.log(_form);
+        console.log(_formValue);
+        $.validator.unobtrusive.parse(document);
 
         var isValid = _form.valid();
+        console.log("form is " +isValid);
+        console.log(_form.data('unobtrusiveValidation'));
 
 
         if (isValid) {

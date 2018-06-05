@@ -2,6 +2,8 @@
 
 @{
     Layout = null;
+    HtmlHelper.ClientValidationEnabled = true;
+    HtmlHelper.UnobtrusiveJavaScriptEnabled = true;
 }
 
 <div class="modal-header">
@@ -11,13 +13,17 @@
     </button>
 </div>
 
+<script src="~/Scripts/jquery.validate.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+<script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+
 <div class="modal-body">
     @using (Html.BeginForm("EditCategory", "Category", FormMethod.Post, new { id = "submittedForm" }))
     {
         @Html.AntiForgeryToken()
 
         <div class="form-horizontal">
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
             @Html.HiddenFor(model => model.Category.Id)
 
             <div class="form-group">
@@ -53,7 +59,7 @@
                     </p>
                     <div class="collapse" id="collapseExample">
                         <div class="card card-body" id="postsTarget">
-                            
+
                         </div>
                     </div>
                 }
@@ -74,10 +80,25 @@
     }
 </div>
 
-@Scripts.Render("~/bundles/jqueryval")
+@*@Scripts.Render("~/bundles/jqueryval")*@
 
 <script>
-    $(function () {
+    $(function ()
+    {
+        $('#submittedForm').removeData('validator');
+        $('#submittedForm').removeData('unobtrusiveValidation');
+        $("#submittedForm").each(function () { $.data($(this)[0], 'validator', false); }); //enable to display the error messages
+        $.validator.unobtrusive.parse("#submittedForm");
+
+        
+    })
+
+    var _postCategory = '@Url.RouteUrl(new { controller = "Category", action = "EditCategory"})';
+        var _getCategories = '@Url.Action("GetCategoriesData", "Category")';
+
+    
+
+    @*$(function () {
         let dataChanged = false;
 
         $("#btnShowPosts").click(function (e) {
@@ -175,5 +196,7 @@
             //$("#target").empty();
         })
 
-    })
+    })*@
 </script>
+
+@Scripts.Render(Url.Content("~/Scripts/Assets/Category/EditCategory/pageCategoryConrol.js"))

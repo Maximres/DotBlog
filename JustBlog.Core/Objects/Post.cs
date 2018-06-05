@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JustBlog.Core.Objects.Metadata;
+using JustBlog.Core.Objects;
 
 namespace JustBlog.Core.Objects
 {

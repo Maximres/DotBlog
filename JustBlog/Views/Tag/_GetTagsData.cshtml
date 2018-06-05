@@ -48,7 +48,8 @@
                     HttpMethod = "GET",
                     OnBegin = "IsLoading",
                     OnSuccess = "SetContent",
-                    OnFailure = "AlertUser"
+                    OnFailure = "AlertUser",
+                    OnComplete = "SetValidation"
                 })
             </td>
             <td class="text-right">@item.Description</td>
@@ -96,7 +97,12 @@
         }
         return false;
     }
-
+    function SetValidation() {
+        $('#submittedForm').removeData('validator');
+        $('#submittedForm').removeData('unobtrusiveValidation');
+        $("#submittedForm").each(function () { $.data($(this)[0], 'validator', false); }); //enable to display the error messages
+        $.validator.unobtrusive.parse("#submittedForm");
+    }
 
     function SetContent(data) {
         //обнуляем счетчик кликов

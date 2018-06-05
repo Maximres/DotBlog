@@ -12,8 +12,6 @@
         HttpMethod = "Post",
         OnSuccess = "toggleLoader"
     };
-    HtmlHelper.ClientValidationEnabled = true;
-    HtmlHelper.UnobtrusiveJavaScriptEnabled = true;
 }
 
 
@@ -48,14 +46,14 @@
             <td class="text-right">@item.Id</td>
             <td>
                 @Ajax.ActionLink(item.Name, "Admin", new AjaxOptions
-       {
-           HttpMethod = "GET",
-           Url = Url.RouteUrl(new { controller = "Category", action = "EditCategory", id = item.Id}),
-           OnBegin = "IsLoading",
-           OnSuccess = "SetContent",
-           OnFailure = "AlertUser"
+                {
+                    HttpMethod = "GET",
+                    Url = Url.RouteUrl(new { controller = "Category", action = "EditCategory", id = item.Id}),
+                    OnBegin = "IsLoading",
+                    OnSuccess = "SetContent",
+                    OnFailure = "AlertUser"
 
-       })
+                 })
             </td>
             <td class="text-right">@item.Description</td>
 
@@ -116,7 +114,8 @@
         var modal = $("#target").empty().html(data);
         $("#editModal").modal({
             backdrop: 'static',
-            keyboard: false
+            keyboard: false,
+
         });
         hideLoader();
     }

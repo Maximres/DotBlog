@@ -140,7 +140,12 @@ ADD PAGINATION
         var modal = $("#target").empty().html(data);
         $("#editModal").modal({
             backdrop: 'static',
-            keyboard: false
+            keyboard: false,
+            open: function () {
+                var $this = $(this);
+                $.validator.unobtrusive.parse($this);
+                $this.validate();
+            }
         });
         hideLoader();
     }

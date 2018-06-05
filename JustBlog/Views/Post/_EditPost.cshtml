@@ -8,16 +8,15 @@
     var mod = Model;
     var cachedSelectList = Cache["CategorySelectList"] as List<SelectListItem>;
     string selectedId = cachedSelectList.FirstOrDefault(s => s.Selected)?.Value ?? "0";
-    //HtmlHelper.ClientValidationEnabled = true;
-    //HtmlHelper.UnobtrusiveJavaScriptEnabled = true;
-
 
 }
 
 @*<script src="~/Scripts/jquery-3.3.1.js"></script>*@
-<script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+@*<script src="~/Scripts/jquery.js"></script>*@
 <script src="~/Scripts/jquery.validate.js"></script>
 <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+@*<script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>*@
+
 <div class="modal-header">
     <h5 class="modal-title" id="exampleModalLongTitle">Редактирование поста</h5>
     <button type="button" class="close" aria-label="Close" id="btnClose1">
@@ -31,6 +30,7 @@
         @Html.AntiForgeryToken()
 
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        
 
         @Html.HiddenFor(m => m.Post.Id)
 
@@ -146,6 +146,6 @@
 </script>
 
 
-@Scripts.Render(Url.Content("~/Scripts/Assets/Post/EditPost/pageControll.js?version=" + DateTime.Now.Ticks.ToString()))
+@Scripts.Render(Url.Content("~/Scripts/Assets/Post/EditPost/pagePostControl.js?version=" + DateTime.Now.Ticks.ToString()))
 
 

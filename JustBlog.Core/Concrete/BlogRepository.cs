@@ -299,7 +299,7 @@ namespace JustBlog.Core.Concrete
                         dbEntry.UrlSlug = tag.UrlSlug.Trim();
                     }
                 }
-                _context.SaveChanges();
+                //_context.SaveChanges();
             }
             catch (DbUpdateException)
             {

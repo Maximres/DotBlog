@@ -4,9 +4,13 @@
     ViewBag.Title = "Edit tag";
     //Layout = "~/Views/Shared/_AdminLayout.cshtml";
     Layout = null;
-    //HtmlHelper.ClientValidationEnabled = true;
-    //HtmlHelper.UnobtrusiveJavaScriptEnabled = true;
+    HtmlHelper.ClientValidationEnabled = true;
+    HtmlHelper.UnobtrusiveJavaScriptEnabled = true;
 }
+
+
+<script src="~/Scripts/jquery.validate.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
 
 <div class="modal-header">
     <h5 class="modal-title" id="exampleModalLongTitle">Редактирование тега</h5>
@@ -14,7 +18,6 @@
         <span aria-hidden="true">&times;</span>
     </button>
 </div>
-@Scripts.Render("~/bundles/jqueryval")
 
 
 <div class="modal-body">
@@ -29,16 +32,8 @@
         <div class="form-group">
             @Html.LabelFor(m => m.Tag.Name, new { @class = "control-label col-md-6" })
             <div class="col-12">
-                @Html.EditorFor(m => m.Tag.Name, new { @class = "form-control" })
+                @Html.TextBoxFor(m => m.Tag.Name, new  { @class = "form-control" })
                 @Html.ValidationMessageFor(m => m.Tag.Name, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(m => m.Tag.Description, new { @class = "control-label col-md-6" })
-            <div class="col-12">
-                @Html.EditorFor(m => m.Tag.Description, new { @class = "form-control" })
-                @Html.ValidationMessageFor(m => m.Tag.Description, "", new { @class = "text-danger" })
             </div>
         </div>
 
@@ -49,8 +44,16 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text" id="example-url">https://example.com/tags/</span>
                 </div>
-                @Html.EditorFor(m => m.Tag.UrlSlug, new { @class = "form-control", id = "example-url", aria_describedby = "example-url" })
+                @Html.TextBoxFor(m => m.Tag.UrlSlug,  new { @class = "form-control", id = "example-url", aria_describedby = "example-url" } )
                 @Html.ValidationMessageFor(m => m.Tag.UrlSlug, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Tag.Description, new { @class = "control-label col-md-6" })
+            <div class="col-12">
+                @Html.TextBoxFor(m => m.Tag.Description,  new { @class = "form-control" } )
+                @Html.ValidationMessageFor(m => m.Tag.Description, "", new { @class = "text-danger" })
             </div>
         </div>
 
@@ -84,149 +87,14 @@
     }
 </div>
 
-@Scripts.Render("~/bundles/jqueryval")
+@*@Scripts.Render("~/bundles/jqueryval")*@
 
 <script>
-        var _postsForTag = '@Url.Action("PostsForTag", "Tag", new { id = Model.Tag.Id })';
-    $(function () {
-        //изменял ли пользователь данные формы
-        let dataChanged = false;
-        $("#btnShowPosts").click(function (e) {
-            console.log("inside")
-            let empty = $("#postsTarget").has("div");
-            let contains = $("#postsTarget").has("*");
-
-            if (contains.length <= 0) {
-                $.ajax({
-                    method: "POST",
-                    cache: false,
-                    async: true,
-                    dataType: "json",
-                    url: '@Url.Action("PostsForTag", "Tag", new { id = Model.Tag.Id })',
-                    success: function (jsonStr) {
-                        let posts = JSON.parse(jsonStr);
-                        var table = '<table class="table">'
-                        for (var i = 0; i < posts.length; i++) {
-
-                            var tableRow = '<tr>' +
-                                '<td>' + posts[i].Id + '</td>' +
-                                '<td>' + posts[i].Title + '</td>' +
-                                '<td>' + '<input type="checkbox" name="' + posts[i].Title + '" value="' + posts[i].Id + '" checked> <td>' +
-                                '</tr>';
-                            table += tableRow;
-                        }
-                        table += '</table>';
-                        $('#postsTarget').html(table);
-                    },
-                    error: function (err) {
-                        $('#postsTarget').html("<div>Не удалось загрузить посты</div>");
-                    }
-                });
-            }
-        });
-
-        $("#submittedForm").submit(function (e) {
-            clickedOnce = true;
-            e.preventDefault();
-            //to the implementation in partial view reload the validators
-            var _form = $("#submittedForm")
-                .removeData("validator") /* added by the raw jquery.validate plugin */
-                .removeData("unobtrusiveValidation");/* added by the jquery unobtrusive plugin */
-            var _formValue = $(this)[0];
-
-           $.validator.unobtrusive.parse(_form);
-
-            var isValid = _form.valid();
-            console.log(isValid);
-            console.log("");
-            console.log(_form.data('unobtrusiveValidation'));
-
-
-            if (isValid) {
-                let _data = new FormData(_formValue);
-
-                $.ajax({
-                    method: "POST",
-                    processData: false,
-                    cache: false,
-                    contentType: false,
-                    url: '@Url.Action("EditTag", "Tag")',
-                    data: _data,
-                    success: function (response) {
-                        if (response.success == true) {
-                            alert(response.responseText);
-                            $("#editModal").modal('hide');
-                            dataChanged = false;
-                            //Перезагружается страницу
-                            //location.reload();
-
-                            $.ajax({
-                                method: "GET",
-                                url: '@Url.Action("GetTagsData", "Tag")',
-                                dataType: "html",
-                                success: function (response) {
-                                    //update partly
-                                    $("#tableBody").empty().html(response);
-                                },
-                                error: function () {
-                                    //update fully
-                                    location.reload();
-                                }
-                            });
-                        } else {
-                            // DoSomethingElse()
-                            alert(response.responseText);
-                        }
-
-
-                    },
-                    error: function (jqXHR) {
-                        alert("Что-то пошло не так...");
-                    }
-                })
-                    .done(function (data, textStatus, jqXHR) {
-                        //DoSomethingUsual()
-                    });
-            }
-        })
-
-
-        //проверка на внесение изменений в данные формы
-        $("input, select").change(function () {
-            dataChanged = true;
-        })
-
-        //подтверждение закрытие модальной формы
-        $("#btnClose1, #btnClose2").click(function (e) {
-            e.preventDefault();
-            //debugger;
-            if (dataChanged) {
-                var closeConfirmed = confirm("Были внесены изменения. \nЗакрыть окно?");
-                if (closeConfirmed) {
-                    $("#editModal").modal('hide');
-                    dataChanged = false;
-                    $("#target").empty();
-                }
-            }
-            else {
-                $("#editModal").modal('hide');
-                dataChanged = false;
-                $("#target").empty();
-            }
-            //$("#target").empty();
-        })
-    })
-
-    function IncludePosts(data) {
-        if (data.isEmpty) {
-
-        } else {
-            var posts = data.posts;
-            for (var i = 0; i < posts.length; i++) {
-
-            }
-        }
-    };
+    var _getRalatedPosts = '@Url.Action("PostsForTag", "Tag", new { id = Model.Tag.Id })';
+    var _postTagAction = '@Url.Action("EditTag", "Tag")';
+    var _successedTags = '@Url.Action("GetTagsData", "Tag")';
 
 </script>
+
+@Scripts.Render(Url.Content("~/Scripts/Assets/Tag/EditTag/pageTagControl.js"));
 
